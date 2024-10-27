@@ -10,6 +10,6 @@
 - Vite
 - SWC
 - Tailwindcss with postcss
-- ...
+- [daisyUI](https://daisyui.com)
 
 `npm run dev` for development server.
