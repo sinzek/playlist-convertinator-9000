@@ -1,10 +1,10 @@
-export default function App() {
-  return (
-    <>
-      <header className="">
+import "./index.css";
 
-      </header>
-      Hello
-    </>
-  );
+export default function App() {
+	return (
+		<>
+			<button class="btn btn-primary">Button</button>
+			Hello
+		</>
+	);
 }
