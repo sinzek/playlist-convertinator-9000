@@ -6,7 +6,7 @@
 
 #### Technologies:
 
-- React (HTML, CSS, Node.js)
+- React (HTML, CSS, Javascript, Node.js)
 - Vite
 - SWC
 - Tailwindcss with postcss
