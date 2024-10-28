@@ -5,4 +5,11 @@ export default {
 		extend: {},
 	},
 	plugins: [require("daisyui")],
+	daisyui: {
+		themes: [
+			"dark",
+			"light"
+		]
+	},
+	darkMode: ['class', '[data-theme="synthwave"]']
 };
