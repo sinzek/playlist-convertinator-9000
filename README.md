@@ -11,5 +11,7 @@
 - SWC
 - Tailwindcss with postcss
 - [daisyUI](https://daisyui.com)
+- react-router-dom
+- etc.
 
 `npm run dev` for development server.
