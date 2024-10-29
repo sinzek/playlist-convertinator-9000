@@ -79,6 +79,7 @@ export default function Navbar() {
 					<label className="swap swap-rotate">
 						{/* this hidden checkbox controls the state */}
 						<input
+							id="darkmode-toggle"
 							type="checkbox"
 							className="theme-controller"
 							value="light"

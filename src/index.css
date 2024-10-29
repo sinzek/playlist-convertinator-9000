@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 #root {
-    @apply transition-colors duration-500;
+    @apply transition-colors duration-300;
 }
 
 #background {
@@ -25,7 +25,8 @@
     background-repeat: repeat;
     font-family: Poppins;
     -webkit-filter: brightness(var(--background-brightness));
-    -webkit-transition : -webkit-filter 500ms linear;
+    -webkit-transition : -webkit-filter 300ms ease;
+    z-index: -1;
 }
 
 .card-bg {
@@ -111,4 +112,12 @@
 .png-shadow {
     -webkit-filter: drop-shadow(3px 3px 3px #222);
     filter: drop-shadow(3px 3px 3px #222);
+}
+
+button {
+    transform: scale(1);
+}
+
+button:hover {
+    transform: scale(1.02);
 }
