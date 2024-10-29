@@ -2,3 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
+.bg-hover-shine-effect {
+    --shine-deg: 45deg;
+    background-repeat: no-repeat;
+    background-position: -100% 0, 0 0;
+    overflow: hidden;
+  
+    background-image: linear-gradient(
+      var(--shine-deg),
+      transparent 20%,
+      transparent 40%,
+      rgb(68, 68, 68, 0.2) 50%,
+      rgb(68, 68, 68, 0.2) 55%,
+      transparent 70%,
+      transparent 100%
+    );
+  
+    background-size: 250% 250%, 100% 100%;
+    transition: background-position 0s ease;
+}
+  
+.bg-hover-shine-effect:hover {
+  background-position: 200%0, 0 0;
+  transition-duration: 1.5s;
+}
+
+.bg-repeat-shine-effect {
+    --shine-deg: 45deg;
+    background-repeat: no-repeat;
+    background-position: -100% 0, 0 0;
+    overflow: hidden;
+  
+    background-image: linear-gradient(
+      var(--shine-deg),
+      transparent 20%,
+      transparent 40%,
+      rgb(255, 255, 255, 0.2) 50%,
+      rgb(255, 255, 255, 0.2) 55%,
+      transparent 70%,
+      transparent 100%
+    );
+  
+    background-size: 250% 250%, 100% 100%;
+    animation: moveBackground 3s ease-in-out infinite;
+    
+}
+  
+@keyframes moveBackground {
+    0% {
+        background-position: -100% 0, 0 0;
+    }
+    50% {
+        background-position: -100% 0, 0 0;
+    }
+    100% {
+        background-position: 200% 0, 0 0;
+    }
+}

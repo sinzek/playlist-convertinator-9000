@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 
 export default function Navbar() {
 	const [convertState, setConvertState] = useState("hidden");
@@ -24,38 +24,45 @@ export default function Navbar() {
 	return (
 		<>
 			<header className="flex items-stretch items-center justify-center w-full pt-2 pb-5">
+
+				<div className="hidden sm:flex bg-base-200 rounded-box w-[3.5rem] mr-2 items-center justify-center tooltip tooltip-bottom" data-tip="hello">
+					<Link to="/">
+						<img width={30} height={30} src="/icon.png" />
+					</Link>
+				</div>
+				
 				<ul className="menu bg-base-200 menu-horizontal rounded-box">
 					<li>
-						<a href="/" className={activeState === "/" ? "active" : ""}>
+						<Link to="/" className={activeState === "/" ? "active" : ""}>
 							🏠 Home
-						</a>
+						</Link>
 					</li>
 					<li>
-						<a
-							href="/convert"
+						<Link
+							to="convert"
 							className={activeState === "/convert" ? "active" : ""}
 						>
 							🔄 Convert
 							<span className={`badge badge-sm ${convertState}`}>
 								{convertStateName}
 							</span>
-						</a>
+						</Link>
 					</li>
 					<li>
-						<a
-							href="/account"
+						<Link
+							to="account"
 							className={activeState === "/account" ? "active" : ""}
 						>
 							👤 Account
-						</a>
+						</Link>
 					</li>
 					<li>
-						<a
-							href="/login"
+						<Link
+							to="login"
 							className={activeState === "/login" ? "active" : ""}
 						>
 							🔒 Login
-						</a>
+						</Link>
 					</li>
 				</ul>
 
@@ -91,7 +98,8 @@ export default function Navbar() {
 						</svg>
 					</label>
 				</div>
-				<div className="sm:hidden fixed bg-base-200 rounded-box w-[3rem] h-[3rem] bottom-1 right-1 flex items-center justify-center">
+
+				<div className="sm:hidden fixed bg-neutral rounded-box w-[3rem] h-[3rem] bottom-1 right-1 flex items-center justify-center z-[999]">
 					{" "}
 					{/* on smaller screns */}
 					<label className="swap swap-rotate">
@@ -115,7 +123,7 @@ export default function Navbar() {
 
 						{/* moon icon */}
 						<svg
-							className="swap-on h-5 w-5 fill-current"
+							className="swap-on h-5 w-5 fill-white"
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 24 24"
 						>
