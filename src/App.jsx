@@ -10,7 +10,7 @@ export const router = createBrowserRouter([
     {
         path: "/", 
         element: <App />,
-        errorElement: <><Navbar /><ErrorPage /></>,
+        errorElement: <><Navbar /><ErrorPage /></>, // looks ugly like this but whatever
         children:[
              {
                 path: "/",

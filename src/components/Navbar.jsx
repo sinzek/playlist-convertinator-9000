@@ -34,7 +34,7 @@ export default function Navbar() {
 
 				<div className="hidden sm:flex card-bg rounded-box w-[3.5rem] mr-2 items-center justify-center tooltip tooltip-bottom shadow-lg" data-tip="boo!">
 					<NavLink to="/">
-						<img width={30} height={30} src="/icon.png" />
+						<img width={30} height={30} src="/icon.png" id="icon" />
 					</NavLink>
 				</div>
 				

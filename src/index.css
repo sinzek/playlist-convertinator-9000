@@ -114,10 +114,11 @@
     filter: drop-shadow(3px 3px 3px #222);
 }
 
-button {
+button, #icon {
     transform: scale(1);
+    transition: 1s ease;
 }
 
-button:hover {
+button:hover, #icon:hover {
     transform: scale(1.02);
 }
