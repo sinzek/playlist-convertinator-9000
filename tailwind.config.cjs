@@ -2,7 +2,16 @@
 export default {
 	content: ["./index.html", "./src/**/*.{html,jsx}"],
 	theme: {
-		extend: {},
+		extend: {
+			opacity: {
+				'99': '0.99',
+				'98': '0.98',
+				'97': '0.97',
+			}
+		},
+		fontFamily: {
+			'display': ['Poppins'],
+		}
 	},
 	plugins: [require("@tailwindcss/typography"),require("daisyui")],
 	daisyui: {
