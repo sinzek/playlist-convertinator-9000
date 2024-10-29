@@ -15,7 +15,10 @@ export default function Home() {
                         or just want to share your playlists with friends, this tool is here to help.
                     </p>
                     <div className="flex items-center justify-center w-full m-auto">
-                        <button className="flex btn btn-primary w-[15rem] h-[4rem] bg-repeat-shine-effect text-center justify-center hover:shadow-xl  font-bold text-2xl mt-5 lg:mt-0">Convert Now</button>
+                        <Link to="/convert">
+                            <button className="flex btn btn-primary w-[15rem] h-[4rem] bg-repeat-shine-effect text-center justify-center hover:shadow-xl font-bold text-2xl mt-5 lg:mt-0">Convert Now</button>
+                        </Link>
+                        
                     </div>
                 </div>
                 <div className="card card-bg lg:mr-5 lg:ml-2.5 mx-5 lg:mb-0 mb-5 rounded-box grid flex-grow justify-center items-center p-5 shadow-lg">
