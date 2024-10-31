@@ -28,9 +28,28 @@ export default function Home() {
             <div className="flex flex-col">
                 <div className="card card-bg rounded-box flex-grow mx-5 lg:mb-0 mb-5 lg:mt-5 p-5 justify-center items-start text-left shadow-lg">
                     <h2 className="text-3xl mb-5 text-primary font-bold">How it works</h2>
-                        <h3 className="text-xl font-bold">1. Connect Your Accounts</h3><p className="mb-2">Start by linking your Apple Music and YouTube Music accounts for seamless integration</p>
-                        <h3 className="text-xl font-bold">2. Select Your Playlist</h3><p className="mb-2">Choose the Apple Music playlist you want to convert or select songs to add</p>
-                        <h3 className="text-xl font-bold">3. Convert and Enjoy</h3><p className="">With a single click, convert your playlist and view it in your YouTube Music library in seconds</p>
+
+                    <div tabIndex={0} className="collapse collapse-arrow hover:shadow-lg hover:ring-1 hover:ring-primary/5 transition-all ease-in-out">
+                        <input type="checkbox" className="peer" />
+                        <div className="collapse-title text-xl font-bold peer-checked:text-primary transition-colors ease-in-out">1. Connect Your Accounts</div>
+                        <div className="collapse-content">
+                            <p>Start by signing up and linking your Apple Music and YouTube Music accounts for seamless integration</p>
+                        </div>
+                    </div>
+                    <div tabIndex={0} className="collapse collapse-arrow hover:shadow-lg hover:ring-1 hover:ring-primary/5 transition-all ease-in-out">
+                        <input type="checkbox" className="peer" />
+                        <div className="collapse-title text-xl font-bold peer-checked:text-primary transition-colors ease-in-out">2. Select Your Playlist</div>
+                        <div className="collapse-content">
+                            <p>Choose the Apple Music playlist you want to convert or select songs to add</p>
+                        </div>
+                    </div>
+                    <div tabIndex={0} className="collapse collapse-arrow hover:shadow-lg hover:ring-1 hover:ring-primary/5 transition-all ease-in-out">
+                        <input type="checkbox" className="peer" />
+                        <div className="collapse-title text-xl font-bold peer-checked:text-primary transition-colors ease-in-out">3. Convert and Enjoy</div>
+                        <div className="collapse-content">
+                            <p>With a single click, convert your playlist and view it in your YouTube Music library in seconds</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>
