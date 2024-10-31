@@ -12,6 +12,8 @@ export default function Navbar() {
 		JSON.parse(localStorage.getItem("islight"))
 	);
 
+	const [isLoggedIn, setLoginStatus] = useState(false); // change later
+
 	const background = document.getElementById("background");
 	function setBackgroundLighting(islight) {
 		if(!islight) {
@@ -32,13 +34,13 @@ export default function Navbar() {
 		<>
 			<header className="flex items-stretch items-center justify-center w-full pt-2 pb-5 sticky top-0 z-[999]">
 
-				<div className="hidden sm:flex card-bg rounded-box w-[3.5rem] mr-2 items-center justify-center tooltip tooltip-bottom shadow-lg" data-tip="boo!">
+				<div className="hidden sm:flex header-bg rounded-box w-[3.5rem] mr-2 items-center justify-center tooltip tooltip-bottom shadow-lg" data-tip="boo!">
 					<NavLink to="/">
 						<img width={30} height={30} src="/icon.png" id="icon" />
 					</NavLink>
 				</div>
 				
-				<ul className="menu card-bg menu-horizontal rounded-box shadow-lg" id="navbar-links">
+				<ul className="menu header-bg menu-horizontal rounded-box shadow-lg" id="navbar-links">
 					<li>
 						<NavLink to="/" className="px-2 lg:px-4">
 							🏠 Home
@@ -55,7 +57,7 @@ export default function Navbar() {
 							</span>
 						</NavLink>
 					</li>
-					<li>
+					<li className={`${isLoggedIn ? null : 'hidden'}`}>
 						<NavLink
 							to="account"
 							className="px-2 lg:px-4"
@@ -68,12 +70,12 @@ export default function Navbar() {
 							to="login"
 							className="px-2 lg:px-4"
 						>
-							🔒 Login
+							{isLoggedIn? "🚪 Log out" : "🔒 Log in"}
 						</NavLink>
 					</li>
 				</ul>
 
-				<div className="flex card-bg rounded-box w-[3.5rem] ml-2 items-center justify-center shadow-lg">
+				<div className="flex header-bg rounded-box w-[3.5rem] ml-2 items-center justify-center shadow-lg">
 					{" "}
 					{/* on larger screns */}
 					<label className="swap swap-rotate">

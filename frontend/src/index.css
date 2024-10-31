@@ -43,6 +43,9 @@
 }
 
 .card-bg {
+	@apply bg-base-100 ring-1 ring-primary/5;
+}
+.header-bg {
 	@apply bg-base-100 bg-opacity-60 backdrop-blur-2xl ring-1 ring-primary/5;
 }
 
@@ -50,6 +53,15 @@
 #navbar-links a:active {
 	background-color: theme("colors.primary");
 	color: white;
+}
+
+#tab-list a.tab.tab-active,
+#tab-list a.tab.tab-active::before {
+	--tab-bg: theme("colors.base-100");
+}
+
+#login-card {
+	transition: height 0.5s ease;
 }
 
 .bg-hover-shine-effect {
@@ -137,4 +149,14 @@ button,
 button:hover,
 #icon:hover {
 	transform: scale(1.02);
+}
+
+.offscreen {
+	position: absolute;
+	left: -100vw; /* Moves the element 100% of the viewport width to the left */
+}
+
+.height-transition {
+	transition: height 0.5s ease;
+
 }

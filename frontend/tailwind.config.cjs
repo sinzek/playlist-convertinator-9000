@@ -7,7 +7,7 @@ export default {
 				'99': '0.99',
 				'98': '0.98',
 				'97': '0.97',
-			}
+			},
 		},
 		fontFamily: {
 			'display': ['Poppins'],
