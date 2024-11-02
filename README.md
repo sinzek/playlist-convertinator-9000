@@ -13,6 +13,7 @@
 - [daisyUI](https://daisyui.com)
 - react-router-dom
 - Express.js
+- MongoDB
 - etc.
 
 `npm run dev` for development server.
