@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Convert from "./pages/Convert";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import ErrorPage from "./pages/ErrorPage";
 import Account from "./pages/Account";
 
@@ -26,9 +27,13 @@ export const router = createBrowserRouter([
                 element: <Account />
             },
             {
-                path: "/login",
-                element: <Login />
+                path: "/create-account",
+                element: <Register />
             },
+            {
+                path: "/log-in",
+                element: <Login />
+            }
         ]
     }
 ]);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, Link, NavLink } from "react-router-dom";
+import { useLocation, NavLink } from "react-router-dom";
 import "../index.css"
 
 export default function Navbar() {
@@ -12,7 +12,29 @@ export default function Navbar() {
 		JSON.parse(localStorage.getItem("islight"))
 	);
 
+
+
 	const [isLoggedIn, setLoginStatus] = useState(false); // change later
+	const [wantsCreateAcc, setWantsCreateAcc] = useState(false); 
+	const [curTooltip, setCurTooltip] = useState("");
+
+	const location = useLocation();
+	useEffect(() => {
+		
+		if(location.pathname === "/create-account") {
+			setWantsCreateAcc(true);
+			setCurTooltip("Already have an account? Log in ↘");
+		} else if(location.pathname === "/log-in") {
+			setWantsCreateAcc(false);
+			setCurTooltip("Don't have an account just yet? Create one ↘");
+		} else if(location.pathname === "/") {
+			setCurTooltip("Boo!");
+		} else if(location.pathname ==="/convert") {
+			setCurTooltip("YAY!!!!!!!!");
+		} else {
+			setCurTooltip("Uh oh, this page doesn't exist!");
+		}
+	}, [location])
 
 	const background = document.getElementById("background");
 	function setBackgroundLighting(islight) {
@@ -34,7 +56,7 @@ export default function Navbar() {
 		<>
 			<header className="flex items-stretch items-center justify-center w-full pt-2 pb-5 sticky top-0 z-[999]">
 
-				<div className="hidden sm:flex header-bg rounded-box w-[3.5rem] mr-2 items-center justify-center tooltip tooltip-bottom shadow-lg" data-tip="boo!">
+				<div className="hidden sm:flex header-bg rounded-box w-[3.5rem] mr-2 items-center justify-center tooltip tooltip-bottom shadow-lg" data-tip={curTooltip}>
 					<NavLink to="/">
 						<img width={30} height={30} src="/icon.png" id="icon" />
 					</NavLink>
@@ -67,12 +89,13 @@ export default function Navbar() {
 					</li>
 					<li>
 						<NavLink
-							to="login"
+							to={wantsCreateAcc ? "create-account" : "log-in"}
 							className="px-2 lg:px-4"
 						>
-							{isLoggedIn? "🚪 Log out" : "🔒 Log in"}
+							{wantsCreateAcc ? "👤 Create account" : "🔒 Log in"}
 						</NavLink>
 					</li>
+					
 				</ul>
 
 				<div className="flex header-bg rounded-box w-[3.5rem] ml-2 items-center justify-center shadow-lg">

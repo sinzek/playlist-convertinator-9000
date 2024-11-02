@@ -12,6 +12,7 @@
 - Tailwindcss with postcss
 - [daisyUI](https://daisyui.com)
 - react-router-dom
+- Express.js
 - etc.
 
 `npm run dev` for development server.
