@@ -14,6 +14,7 @@
 - react-router-dom
 - Express.js
 - MongoDB
+- axios
 - etc.
 
 `npm run dev` for frontend development server\
