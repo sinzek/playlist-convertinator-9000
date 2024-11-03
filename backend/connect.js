@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion } = require("mongodb");
 require('dotenv').config({path: "./config.env"});
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -10,18 +10,14 @@ const client = new MongoClient(process.env.ATLAS_URI, {
   }
 });
 
-let userData, playlistData;
+let data;
 
 module.exports = {
     connectToServer: () => {
-        userData = client.db("Credentials");
-        playlistData = client.db("Playlists");
+        data = client.db("UserInfo");
     },
-    getUserDb: () => {
-        return userData;
-    },
-    getPlaylistDb: () => {
-        return playlistData;
+    getDb: () => {
+        return data;
     }
 };
 
