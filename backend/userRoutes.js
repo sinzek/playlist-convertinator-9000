@@ -18,18 +18,43 @@ userRoutes.route("/users").get(async (request, response) => {
     }
 });
 
-// #2 - Retrieve one user
-userRoutes.route("/users/:id").get(async (request, response) => {
+// #2 - Retrieve one user (query = id, username, or email ? {input})
+userRoutes.route("/users/find").get(async (request, response) => {
     let db = database.getDb();
-    try {
-        let data = await db.collection("Credentials").findOne({_id: new ObjectId(request.params.id)})
-        response.json(data);
-    } catch(error) {
-        console.error("Error retrieving user:", error);
-        response.status(500).json({ error: "An error occurred while retrieving specified user." });
+    const { id, username, email } = request.query;
+
+    // Validate that only one parameter is provided
+    if (!id && !username && !email) {
+        return response.status(400).send("Missing required parameter: id, username, or email.");
+    } else if (id && username || id && email || email && username) {
+        return response.status(400).send("More than one parameter provided: must be id, username, or email.");
     }
-    
+
+    // Build query based on provided parameter
+    let query = {};
+    if (id) {
+        query._id = new ObjectId(id);
+    } else if (username) {
+        query.username = username;
+    } else if (email) {
+        query.email = email;
+    }
+
+    // Fetch user from the database
+    try {
+        const user = await db.collection("Credentials").findOne(query);
+        if (user) {
+            response.json(user);
+        } else {
+            response.status(404).send("User not found.");
+        }
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        response.status(500).send("Unable to fetch user.");
+    }
 });
+
+
 
 // #2 - Retrieve all playlists
 userRoutes.route("/users/:id/playlists").get(async (request, response) => {

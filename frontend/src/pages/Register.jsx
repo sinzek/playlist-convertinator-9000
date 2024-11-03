@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import '../index.css';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { instance } from '../api/axios.js'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -87,17 +88,55 @@ export default function Register() {
       setErrMsg('');
     }, [user, pwd, matchPwd]);
 
+
+    const checkEmail = async function (email) {
+      try {
+        const e = await instance.get(`/users/find?email=${email}`);
+        setValidEmail(false);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+    const checkUsername = async function (user) {
+      try {
+        const u = await instance.get(`/users/find?username=${user}`);
+        setValidName(false);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
     const handleSubmit = async (e) => {
+      // const navigate = useNavigate(); // ik this isn't great for SEO, but neither is any of the clientside routing on my site... maybe i'll use react-helmet at some point
       e.preventDefault();
       const v0 = EMAIL_REGEX.test(email);
       const v1 = USER_REGEX.test(user);
       const v2 = PWD_REGEX.test(pwd);
+
       if(!v0 || !v1 || !v2) {
         setErrMsg("Invalid Entry");
         return;
       }
-      console.log(user, pwd);
+
+      const emailExists = await checkEmail(email);
+      const usernameExists = await checkUsername(user);
+
+      if(emailExists && !usernameExists) {
+        setErrMsg("An account with that email already exists!");
+        return;
+      } else if(usernameExists && !emailExists) {
+        setErrMsg("An account with that username already exists!");
+        return;
+      } else if(emailExists && usernameExists) {
+        setErrMsg("An account with that email and username already exists!");
+        return;
+      }
+
+      console.log(`${email}\n${user}\n${pwd}\n`);
       setSuccess(true);
+      //navigate("/succcess");
     }
 
     return(
@@ -177,7 +216,6 @@ export default function Register() {
                       onBlur={() => setEmailFocus(false)}
                       className="grow"
                       placeholder="Email" 
-                      pattern=".@example\.com" 
                       required
                     />
 
@@ -465,7 +503,7 @@ export default function Register() {
                       <span className="label-text">Remember me</span>
                     </label>
                     <input 
-                      type="button"
+                      type="submit"
                       disabled={!validEmail || !validName || !validPwd || !validMatch ? true : false}
                       className="flex btn btn-primary w-[15rem] h-[4rem] text-center justify-center hover:shadow-xl font-bold text-2xl mt-5"
                       value="Create account"
