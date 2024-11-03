@@ -16,5 +16,5 @@
 - MongoDB
 - etc.
 
-`npm run dev` for frontend development server
+`npm run dev` for frontend development server\
 `node server.js` for backend server
