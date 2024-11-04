@@ -7,7 +7,7 @@ let userRoutes = express.Router();
 // Routes
 
 // #1 - Retrieve all users
-userRoutes.route("/users").get(async (request, response) => {
+userRoutes.route("/allusers").get(async (request, response) => {
     let db = database.getDb();
     try {
         let data = await db.collection("Credentials").find({}).toArray();
@@ -19,7 +19,7 @@ userRoutes.route("/users").get(async (request, response) => {
 });
 
 // #2 - Retrieve one user (query = id, username, or email ? {input})
-userRoutes.route("/users/find").get(async (request, response) => {
+userRoutes.route("/users").get(async (request, response) => {
     let db = database.getDb();
     const { id, username, email } = request.query;
 
@@ -57,13 +57,13 @@ userRoutes.route("/users/find").get(async (request, response) => {
 
 
 // #2 - Retrieve all playlists
-userRoutes.route("/users/:id/playlists").get(async (request, response) => {
+userRoutes.route("/users/:username/playlists").get(async (request, response) => {
     let db = database.getDb();
-    let userId = request.params.id;
+    let username = request.params.username;
 
     try {
-        // Find the user by their ID
-        const user = await db.collection("Credentials").findOne({ _id: new ObjectId(userId) });
+        // Find the user by their username
+        const user = await db.collection("Credentials").findOne({ username: username });
 
         // Check if the user exists
         if (!user) {
@@ -79,9 +79,9 @@ userRoutes.route("/users/:id/playlists").get(async (request, response) => {
 });
 
 // #2 - Retrieve one playlist
-userRoutes.route("/users/:id/playlists/:playlistnum").get(async (request, response) => {
+userRoutes.route("/users/:username/playlists/:playlistnum").get(async (request, response) => {
     let db = database.getDb();
-    let userId = request.params.id;
+    let username = request.params.username;
     let playlistNum = parseInt(request.params.playlistnum);
 
     // Validate playlistNum
@@ -91,7 +91,7 @@ userRoutes.route("/users/:id/playlists/:playlistnum").get(async (request, respon
 
     try {
         // Find the user by their ID
-        const user = await db.collection("Credentials").findOne({ _id: new ObjectId(userId) });
+        const user = await db.collection("Credentials").findOne({ username: username });
 
         // Check if the user exists
         if (!user) {
@@ -119,10 +119,10 @@ userRoutes.route("/users/:id/playlists/:playlistnum").get(async (request, respon
 userRoutes.route("/users").post(async (request, response) => {
     let db = database.getDb();
     let mongoObject = {
+        email: request.body.email,
         username: request.body.username,
         password: request.body.password,
-        email: request.body.email,
-        dateJoined: request.body.dateJoined,
+        dateJoined: request.body.date,
         playlists: [{}]
     };
     try {
@@ -135,9 +135,9 @@ userRoutes.route("/users").post(async (request, response) => {
 });
 
 // #3 - Create one playlist
-userRoutes.route("/users/:id/playlists").post(async (request, response) => {
+userRoutes.route("/users/:username/playlists").post(async (request, response) => {
     let db = database.getDb();
-    let userId = request.params.id;
+    let username = request.params.username;
 
     let newPlaylist = {
         playlistName: request.body.playlistName,
@@ -149,7 +149,7 @@ userRoutes.route("/users/:id/playlists").post(async (request, response) => {
     try {
         // Use $push to add the new playlist to the playlists array for the specified user
         let data = await db.collection("Credentials").updateOne(
-            { _id: new ObjectId(userId) },
+            { username: username },
             { $push: { playlists: newPlaylist } }
         );
 
