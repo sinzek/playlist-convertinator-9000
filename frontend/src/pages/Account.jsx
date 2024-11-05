@@ -1,7 +1,3 @@
 export default function Account() {
-    return(
-        <>
-          account page
-        </>
-    )
+	return <>account page</>;
 }

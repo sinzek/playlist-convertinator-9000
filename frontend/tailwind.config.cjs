@@ -4,21 +4,18 @@ export default {
 	theme: {
 		extend: {
 			opacity: {
-				'99': '0.99',
-				'98': '0.98',
-				'97': '0.97',
+				99: "0.99",
+				98: "0.98",
+				97: "0.97",
 			},
 		},
 		fontFamily: {
-			'display': ['Poppins'],
-		}
+			display: ["Poppins"],
+		},
 	},
-	plugins: [require("@tailwindcss/typography"),require("daisyui")],
+	plugins: [require("@tailwindcss/typography"), require("daisyui")],
 	daisyui: {
-		themes: [
-			"dark",
-			"light"
-		]
+		themes: ["dark", "light"],
 	},
-	darkMode: ['class', '[data-theme="synthwave"]']
+	darkMode: ["class", '[data-theme="synthwave"]'],
 };

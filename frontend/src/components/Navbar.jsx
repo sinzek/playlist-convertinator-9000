@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, NavLink } from "react-router-dom";
-import "../index.css"
+import "../index.css";
 
 export default function Navbar() {
 	const [convertState, setConvertState] = useState("hidden");
@@ -12,36 +12,33 @@ export default function Navbar() {
 		JSON.parse(localStorage.getItem("islight"))
 	);
 
-
-
 	const [isLoggedIn, setLoginStatus] = useState(false); // change later
-	const [wantsCreateAcc, setWantsCreateAcc] = useState(false); 
+	const [wantsCreateAcc, setWantsCreateAcc] = useState(false);
 	const [curTooltip, setCurTooltip] = useState("");
 
 	const location = useLocation();
 	useEffect(() => {
-		
-		if(location.pathname === "/create-account") {
+		if (location.pathname === "/create-account") {
 			setWantsCreateAcc(true);
 			setCurTooltip("Already have an account? Log in ↘");
-		} else if(location.pathname === "/log-in") {
+		} else if (location.pathname === "/log-in") {
 			setWantsCreateAcc(false);
 			setCurTooltip("Don't have an account just yet? Create one ↘");
-		} else if(location.pathname === "/") {
+		} else if (location.pathname === "/") {
 			setCurTooltip("Boo!");
-		} else if(location.pathname ==="/convert") {
+		} else if (location.pathname === "/convert") {
 			setCurTooltip("YAY!!!!!!!!");
 		} else {
 			setCurTooltip("Uh oh, this page doesn't exist!");
 		}
-	}, [location])
+	}, [location]);
 
 	const background = document.getElementById("background");
 	function setBackgroundLighting(islight) {
-		if(!islight) {
-			background.style.setProperty('--background-brightness', '15%');
+		if (!islight) {
+			background.style.setProperty("--background-brightness", "15%");
 		} else {
-			background.style.setProperty('--background-brightness', '100%');
+			background.style.setProperty("--background-brightness", "100%");
 		}
 	}
 
@@ -50,40 +47,37 @@ export default function Navbar() {
 		setBackgroundLighting(islight);
 	}, [islight]);
 
-	
-
 	return (
 		<>
 			<header className="flex items-stretch items-center justify-center w-full pt-2 pb-5 sticky top-0 z-[999]">
-
-				<div className="hidden sm:flex header-bg rounded-box w-[3.5rem] mr-2 items-center justify-center tooltip tooltip-bottom shadow-lg" data-tip={curTooltip}>
+				<div
+					className="hidden sm:flex header-bg rounded-box w-[3.5rem] mr-2 items-center justify-center tooltip tooltip-bottom shadow-lg"
+					data-tip={curTooltip}
+				>
 					<NavLink to="/">
 						<img width={30} height={30} src="/icon.png" id="icon" />
 					</NavLink>
 				</div>
-				
-				<ul className="menu header-bg menu-horizontal rounded-box shadow-lg" id="navbar-links">
+
+				<ul
+					className="menu header-bg menu-horizontal rounded-box shadow-lg"
+					id="navbar-links"
+				>
 					<li>
 						<NavLink to="/" className="px-2 lg:px-4">
 							🏠 Home
 						</NavLink>
 					</li>
 					<li>
-						<NavLink
-							to="convert"
-							className="px-2 lg:px-4"
-						>
+						<NavLink to="convert" className="px-2 lg:px-4">
 							🔄 Convert
 							<span className={`badge badge-sm ${convertState}`}>
 								{convertStateName}
 							</span>
 						</NavLink>
 					</li>
-					<li className={`${isLoggedIn ? null : 'hidden'}`}>
-						<NavLink
-							to="account"
-							className="px-2 lg:px-4"
-						>
+					<li className={`${isLoggedIn ? null : "hidden"}`}>
+						<NavLink to="account" className="px-2 lg:px-4">
 							👤 Account
 						</NavLink>
 					</li>
@@ -95,7 +89,6 @@ export default function Navbar() {
 							{wantsCreateAcc ? "👤 Create account" : "🔒 Log in"}
 						</NavLink>
 					</li>
-					
 				</ul>
 
 				<div className="flex header-bg rounded-box w-[3.5rem] ml-2 items-center justify-center shadow-lg">
@@ -131,8 +124,6 @@ export default function Navbar() {
 						</svg>
 					</label>
 				</div>
-
-				
 			</header>
 		</>
 	);

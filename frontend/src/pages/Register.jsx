@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import "../index.css";
 import { Link, useNavigate } from "react-router-dom";
 import { instance } from "../api/axios.js";
 
@@ -96,7 +95,7 @@ export default function Register() {
 
 		if (!v0 || !v1 || !v2) {
 			setErrMsg("Invalid entry!");
-      errRef.current.focus();
+			errRef.current.focus();
 			return;
 		}
 
@@ -104,35 +103,35 @@ export default function Register() {
 			"create-account-remember-me"
 		).checked;
 
-    const curDate = new Date();
-    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const curDateString = curDate.toLocaleDateString('en-US', dateOptions);
+		const curDate = new Date();
+		const dateOptions = {
+			weekday: "long",
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+		};
+		const curDateString = curDate.toLocaleDateString("en-US", dateOptions);
 
-    try {
-      const response = await instance.post("/users", {
-			  email: email,
+		try {
+			const response = await instance.post("/users", {
+				email: email,
 				username: user,
 				password: pwd,
-        date: curDateString
+				date: curDateString,
 			});
-    } catch(error) {
-      if(!error?.response) {
-        setErrMsg("Server did not respond!");
-        errRef.current.focus();
-        return;
-      } else if(error.response?.status === 400) {
-        setErrMsg("An account with that email or username already exists!");
-        errRef.current.focus();
-        return;
-      } else {
-        setErrMsg("Resistration failed!");
-        errRef.current.focus();
-        return;
-      }
-    }
+		} catch (error) {
+			if (!error?.response) {
+				setErrMsg("Server did not respond!");
+			} else if (error.response?.status === 400) {
+				setErrMsg("An account with that email or username already exists!");
+			} else {
+				setErrMsg("Resistration failed!");
+			}
+			errRef.current.focus();
+			return;
+		}
 
-    localStorage.setItem("rememberMe", isChecked);
-		
+		localStorage.setItem("rememberMe", isChecked);
 	};
 
 	return (

@@ -26,20 +26,20 @@
 	font-family: Poppins;
 	-webkit-filter: brightness(var(--background-brightness));
 	-webkit-transition: -webkit-filter 300ms ease;
-    box-shadow: 0 0 30px rgba(0,0,0,0.6) inset;
+	box-shadow: 0 0 30px rgba(0, 0, 0, 0.6) inset;
 	z-index: -1;
 }
 
 #background::after {
-    content: "";
-    width: 120%;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    
-    pointer-events: none;
-    z-index: -1;
+	content: "";
+	width: 120%;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+
+	pointer-events: none;
+	z-index: -1;
 }
 
 .card-bg {
@@ -154,5 +154,4 @@ button:hover,
 
 .height-transition {
 	transition: height 0.5s ease;
-
 }

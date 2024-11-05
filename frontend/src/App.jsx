@@ -8,41 +8,46 @@ import ErrorPage from "./pages/ErrorPage";
 import Account from "./pages/Account";
 
 export const router = createBrowserRouter([
-    {
-        path: "/", 
-        element: <App />,
-        errorElement: <><Navbar /><ErrorPage /></>, // looks ugly like this but whatever
-        children:[
-             {
-                path: "/",
-                element: <Home />,
-                errorElement: <ErrorPage />
-             },
-             {
-                path: "/convert",
-                element: <Convert />
-             },
-             {
-                path: "/account",
-                element: <Account />
-            },
-            {
-                path: "/create-account",
-                element: <Register />
-            },
-            {
-                path: "/log-in",
-                element: <Login />
-            }
-        ]
-    }
+	{
+		path: "/",
+		element: <App />,
+		errorElement: (
+			<>
+				<Navbar />
+				<ErrorPage />
+			</>
+		), // looks ugly like this but whatever
+		children: [
+			{
+				path: "/",
+				element: <Home />,
+				errorElement: <ErrorPage />,
+			},
+			{
+				path: "/convert",
+				element: <Convert />,
+			},
+			{
+				path: "/account",
+				element: <Account />,
+			},
+			{
+				path: "/create-account",
+				element: <Register />,
+			},
+			{
+				path: "/log-in",
+				element: <Login />,
+			},
+		],
+	},
 ]);
 
 function App() {
-    return (
-        <>
-            <Navbar />
-            <Outlet />
-        </>
-    );
+	return (
+		<>
+			<Navbar />
+			<Outlet />
+		</>
+	);
 }
