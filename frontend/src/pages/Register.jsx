@@ -87,25 +87,6 @@ export default function Register() {
 		setErrMsg("");
 	}, [email, user, pwd, matchPwd]);
 
-	const checkEmail = async function (email) {
-		try {
-		  await instance.get(`/users?email=${email}`);
-			setValidEmail(false);
-			return true;
-		} catch(error) {
-			return false;
-		}
-	};
-	const checkUsername = async function (user) {
-		try {
-			await instance.get(`/users?username=${user}`);
-			setValidName(false);
-			return true;
-		} catch(error) {
-			return false;
-		}
-	};
-
 	const handleSubmit = async (e) => {
 		// const navigate = useNavigate(); // ik this isn't great for SEO, but neither is any of the clientside routing on my site... maybe i'll use react-helmet at some point
 		e.preventDefault();
@@ -115,23 +96,7 @@ export default function Register() {
 
 		if (!v0 || !v1 || !v2) {
 			setErrMsg("Invalid entry!");
-			return;
-		}
-
-		const emailExists = await checkEmail(email);
-		const usernameExists = await checkUsername(user);
-
-		if (emailExists && !usernameExists) {
-			setErrMsg("An account with that email already exists!");
-			errRef.current.focus();
-			return;
-		} else if (usernameExists && !emailExists) {
-			setErrMsg("An account with that username already exists!");
-			errRef.current.focus();
-			return;
-		} else if (emailExists && usernameExists) {
-			setErrMsg("An account with that email and username already exists!");
-			errRef.current.focus();
+      errRef.current.focus();
 			return;
 		}
 
@@ -139,30 +104,35 @@ export default function Register() {
 			"create-account-remember-me"
 		).checked;
 
-		console.log(`Success!\n${email}\n${user}\n${pwd}\n`);
-		await handleSuccess(email, user, pwd, isChecked);
-	};
-
-	const handleSuccess = async function (
-		sEmail,
-		sUsername,
-		sPassword,
-		sChecked
-	) {
     const curDate = new Date();
     const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const curDateString = curDate.toLocaleDateString('en-US', dateOptions);
-		localStorage.setItem("rememberMe", sChecked);
-		try {
-			await instance.post("/users", {
-				email: sEmail,
-				username: sUsername,
-				password: sPassword,
+
+    try {
+      const response = await instance.post("/users", {
+			  email: email,
+				username: user,
+				password: pwd,
         date: curDateString
 			});
-		} catch (error) {
-			console.error("Error creating user!", error);
-		}
+    } catch(error) {
+      if(!error?.response) {
+        setErrMsg("Server did not respond!");
+        errRef.current.focus();
+        return;
+      } else if(error.response?.status === 400) {
+        setErrMsg("An account with that email or username already exists!");
+        errRef.current.focus();
+        return;
+      } else {
+        setErrMsg("Resistration failed!");
+        errRef.current.focus();
+        return;
+      }
+    }
+
+    localStorage.setItem("rememberMe", isChecked);
+		
 	};
 
 	return (

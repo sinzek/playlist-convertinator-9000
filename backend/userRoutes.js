@@ -129,8 +129,12 @@ userRoutes.route("/users").post(async (request, response) => {
         let data = await db.collection("Credentials").insertOne(mongoObject);
         response.json(data);
     } catch(error) {
-        console.error("Error creating user:", error);
-        response.status(500).json({ error: "An error occurred while creating user." });
+        if (error.code === 11000) { // Duplicate key error
+            response.status(400).json({ error: "Email or username already exists." });
+        } else {
+            console.error("Error creating user:", error);
+            response.status(500).json({ error: "An error occurred while creating user." });
+        }
     }
 });
 
