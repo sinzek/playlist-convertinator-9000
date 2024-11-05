@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
+import AuthContext from "../context/AuthProvider.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { instance } from "../api/axios.js";
 
@@ -8,6 +9,8 @@ const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%?]).{8,24}/;
 
 export default function Register() {
+    const { setAuth } = useContext(AuthContext);
+
 	const [eyeOpen, isEyeOpen] = useState(false);
 
 	const userRef = useRef();
@@ -37,8 +40,6 @@ export default function Register() {
 
 	useEffect(() => {
 		const result = EMAIL_REGEX.test(email);
-		console.log(result);
-		console.log(email);
 		setValidEmail(result);
 
 		if (email === "") {
@@ -50,8 +51,6 @@ export default function Register() {
 
 	useEffect(() => {
 		const result = USER_REGEX.test(user);
-		console.log(result);
-		console.log(user);
 		setValidName(result);
 
 		if (user === "") {
@@ -63,8 +62,6 @@ export default function Register() {
 
 	useEffect(() => {
 		const result = PWD_REGEX.test(pwd);
-		console.log(result);
-		console.log(pwd);
 		setValidPwd(result);
 		const match = pwd === matchPwd;
 		setValidMatch(match);
@@ -94,7 +91,7 @@ export default function Register() {
 		const v2 = PWD_REGEX.test(pwd);
 
 		if (!v0 || !v1 || !v2) {
-			setErrMsg("Invalid entry!");
+			setErrMsg("Invalid entry! Please fill out all required fields.");
 			errRef.current.focus();
 			return;
 		}
@@ -113,12 +110,23 @@ export default function Register() {
 		const curDateString = curDate.toLocaleDateString("en-US", dateOptions);
 
 		try {
-			const response = await instance.post("/users", {
+			await instance.post("/register", {
 				email: email,
 				username: user,
 				password: pwd,
+                role: "user",
 				date: curDateString,
 			});
+            const response = await instance.post("/login", {
+                username: user,
+                password: pwd
+            });
+            
+            const accessToken = response?.data?.token;
+            const role = response?.data.role;
+            console.log(accessToken, role);
+            setAuth(user, pwd, role, accessToken);
+            localStorage.setItem("accessToken", accessToken);
 		} catch (error) {
 			if (!error?.response) {
 				setErrMsg("Server did not respond!");
@@ -132,6 +140,11 @@ export default function Register() {
 		}
 
 		localStorage.setItem("rememberMe", isChecked);
+        setEmail("");
+        setUser("");
+        setPwd("");
+        setMatchPwd("");
+        console.log("Successfully registered user!");
 	};
 
 	return (
@@ -239,6 +252,7 @@ export default function Register() {
 									onBlur={() => setEmailFocus(false)}
 									className="grow"
 									placeholder="Email"
+                                    value={email}
 									required
 								/>
 							</label>
@@ -326,6 +340,7 @@ export default function Register() {
 									onBlur={() => setUserFocus(false)}
 									className="grow"
 									placeholder="Username"
+                                    value={user}
 									required
 								/>
 							</label>
@@ -420,6 +435,7 @@ export default function Register() {
 									onChange={(e) => setPwd(e.target.value)}
 									className="grow"
 									placeholder="Password"
+                                    value={pwd}
 								/>
 
 								<span className="label-text-alt text-red-500 hidden">
@@ -594,6 +610,7 @@ export default function Register() {
 									onBlur={() => setMatchFocus(false)}
 									className="grow"
 									placeholder="Confirm password"
+                                    value={matchPwd}
 								/>
 							</label>
 							<div
@@ -641,7 +658,7 @@ export default function Register() {
 								<input
 									type="submit"
 									disabled={
-										!validEmail || !validName || !validPwd || !validMatch
+										!validEmail || !validName || !validPwd || !validMatch || errMsg
 											? true
 											: false
 									}

@@ -1,8 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
+import AuthContext from "../context/AuthProvider.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { instance } from "../api/axios.js";
 
 export default function Login() {
+    const { setAuth } = useContext(AuthContext);
+
 	const userRef = useRef();
 	const errRef = useRef();
 
@@ -12,16 +15,54 @@ export default function Login() {
 
 	const [eyeOpen, isEyeOpen] = useState(false);
 
-	// useEffect(() => {
-	//     userRef.current.focus();
-	// }, []);
+	useEffect(() => {
+	    userRef.current.focus();
+	}, []);
 
 	useEffect(() => {
 		setErrMsg("");
 	}, [user, pwd]);
 
-	const onFormSubmit = () => {
-		// update this function later
+	const onFormSubmit = async (e) => {
+		e.preventDefault();
+
+        if(!user || !pwd) {
+            setErrMsg("ERROR: Invalid entry! Please fill out all required fields.");
+			errRef.current.focus();
+			return;
+        }
+
+        let isChecked = document.getElementById(
+			"login-remember-me"
+		).checked;
+
+        try {
+            const response = await instance.post("/login", {
+                username: user,
+                password: pwd,
+            });
+
+            const accessToken = response?.data?.token;
+            const role = response?.data.role;
+            console.log(accessToken, role);
+            setAuth(user, pwd, role, accessToken);
+            localStorage.setItem("accessToken", accessToken);
+        } catch(error) {
+            if (!error?.response) {
+				setErrMsg("Server did not respond!");
+			} else if (error.response?.status === 400) {
+				setErrMsg("Invalid username or password!");
+			} else {
+				setErrMsg("Login failed!");
+			}
+			errRef.current.focus();
+			return;
+        }
+
+        localStorage.setItem("rememberMe", isChecked);
+        setUser("");
+        setPwd("");
+        console.log("Successfully signed in user!")
 	};
 
 	return (
@@ -72,7 +113,7 @@ export default function Login() {
 						>
 							<label
 								className="input input-bordered w-full flex items-center gap-2 mb-2 shadow-inner bg-base-200 focus-within:bg-base-100"
-								htmlFor="username"
+								htmlFor="login-username"
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
@@ -84,11 +125,21 @@ export default function Login() {
 								</svg>
 
 								{/* USERNAME */}
-								<input type="text" className="grow" placeholder="Username" />
+								<input
+									type="text"
+									className="grow"
+									placeholder="Username"
+									id="login-username"
+                                    ref={userRef}
+                                    autoComplete="off"
+                                    onChange={(e) => setUser(e.target.value)}
+                                    value={user}
+                                    required
+								/>
 							</label>
 							<label
 								className="input input-bordered w-full flex items-center gap-2 mb-2 shadow-inner bg-base-200 focus-within:bg-base-100"
-								htmlFor="password"
+								htmlFor="login-password"
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
@@ -108,8 +159,11 @@ export default function Login() {
 									type={eyeOpen ? "text" : "password"}
 									className="grow"
 									placeholder="Password"
-									minLength={7}
-									maxLength={30}
+									id="login-password"
+                                    autoComplete="off"
+                                    onChange={(e) => setPwd(e.target.value)}
+                                    value={pwd}
+                                    required
 								/>
 
 								<label className="swap opacity-70">
@@ -120,6 +174,7 @@ export default function Login() {
 										value={false}
 										checked={eyeOpen}
 										onChange={() => isEyeOpen(!eyeOpen)}
+										name="show/hide password"
 									/>
 
 									{/* open eye */}
@@ -182,18 +237,32 @@ export default function Login() {
 									</svg>
 								</label>
 							</label>
-							<label className="label cursor-pointer gap-2">
-								<input type="checkbox" className="checkbox checkbox-primary" />
-								<span className="label-text">Remember me</span>
-							</label>
+							<div className="flex flex-col w-full mt-2 items-center justify-center">
+								<div className="flex flex-row w-full items-center justify-center">
+									<label
+										className="label cursor-pointer gap-2"
+										htmlFor="login-remember-me"
+									>
+										<input
+											type="checkbox"
+											className="checkbox checkbox-primary"
+											id="login-remember-me"
+										/>
+									</label>
+									<span className="label-text">Remember me</span>
+								</div>
 
-							{/* SUBMIT BUTTON */}
-							<input
-								type="button"
-								className="flex btn btn-primary w-[10rem] h-[4rem] text-center justify-center hover:shadow-xl font-bold text-2xl mt-5"
-								onClick={onFormSubmit}
-								value="Submit"
-							/>
+								<input
+									type="submit"
+									disabled={
+										!user || !pwd || errMsg
+											? true
+											: false
+									}
+									className="flex btn btn-primary w-[15rem] h-[4rem] text-center justify-center hover:shadow-xl font-bold text-2xl mt-5"
+									value="Login"
+								/>
+							</div>
 						</form>
 					</div>
 				</div>

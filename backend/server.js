@@ -3,11 +3,12 @@ const express = require("express");
 const cors = require("cors");
 const users = require("./userRoutes");
 
-const whitelist = ["http://localhost:5173"]; // eventually add domain here
+const whitelist = ["http://localhost:5173", "http://localhost:3000"]; // eventually add domain here
 
 const app = express();
 const PORT = 3000;
 
+app.use(express.json());
 app.use(
 	cors({
 		origin: (origin, callback) => {
@@ -21,7 +22,6 @@ app.use(
 		credentials: true,
 	})
 );
-app.use(express.json());
 app.use(users);
 
 app.listen(PORT, () => {

@@ -1,4 +1,4 @@
-import { createBrowserRouter, Outlet } from "react-router-dom";
+import { createBrowserRouter, Outlet, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Convert from "./pages/Convert";
@@ -10,7 +10,7 @@ import Account from "./pages/Account";
 export const router = createBrowserRouter([
 	{
 		path: "/",
-		element: <App />,
+		element: <MainApp />,
 		errorElement: (
 			<>
 				<Navbar />
@@ -23,14 +23,19 @@ export const router = createBrowserRouter([
 				element: <Home />,
 				errorElement: <ErrorPage />,
 			},
-			{
-				path: "/convert",
-				element: <Convert />,
-			},
-			{
-				path: "/account",
-				element: <Account />,
-			},
+            {
+                element: <ProtectedRoutes />, // routes that require user to be logged in to access
+                children: [
+                    {
+                        path: "/account",
+                        element: <Account />,
+                    },
+                ]
+            },
+            {
+                path: "/convert",
+                element: <Convert />,
+            },
 			{
 				path: "/create-account",
 				element: <Register />,
@@ -43,11 +48,20 @@ export const router = createBrowserRouter([
 	},
 ]);
 
-function App() {
+function MainApp() {
 	return (
 		<>
 			<Navbar />
 			<Outlet />
 		</>
 	);
+}
+
+function ProtectedRoutes() {
+    const localStorageToken = localStorage.getItem("accessToken");
+    return (
+        <>
+            {localStorageToken ? <Outlet /> : <Navigate to="/log-in" replace />} 
+        </>
+    )
 }
