@@ -5,7 +5,7 @@ import { instance } from "../api/axios.js";
 
 
 export default function Login() {
-    const { setAuth, verifyToken } = useAuth();
+    const { verifyToken } = useAuth();
 
     const navigate = useNavigate();
     const location = useLocation();

@@ -13,7 +13,6 @@ export const AuthProvider = ({ children }) => {
     });
 
     const logout = () => {
-        console.log('Logout called - setting loading to false');
         setAuth({
             isAuthenticated: false,
             token: null,
@@ -25,14 +24,12 @@ export const AuthProvider = ({ children }) => {
     };
 
     const verifyToken = async (token) => {
-        console.log('Verifying token, current loading state:', auth.loading);
         if(token) {
             try {
                 const decodedToken = jwtDecode(token);
                 const isExpired = Date.now() >= decodedToken.exp * 1000;
                 
                 if(!isExpired) {
-                    console.log('Token valid - updating auth state');
                     setAuth({
                         isAuthenticated: true,
                         token: token,
@@ -41,11 +38,10 @@ export const AuthProvider = ({ children }) => {
                         loading: false
                     });
                     
-                    // Set up automatic logout
+                    // automatic logout
                     const timeUntilExpiry = decodedToken.exp * 1000 - Date.now();
                     setTimeout(logout, timeUntilExpiry);
                 } else {
-                    console.log('Token expired - logging out');
                     logout();
                 }
             } catch(error) {
@@ -53,7 +49,7 @@ export const AuthProvider = ({ children }) => {
                 logout();
             }
         } else {
-            console.log('No token found - setting loading to false');
+            // no token found, setting loading to false
             setAuth(prev => ({ 
                 ...prev, 
                 isAuthenticated: false,
@@ -63,7 +59,6 @@ export const AuthProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        console.log('Initial useEffect running');
         // Check initial token
         const token = localStorage.getItem("accessToken");
         verifyToken(token);
@@ -84,9 +79,9 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     // Debug log for auth state changes
-    useEffect(() => {
-        console.log('Auth state updated:', auth);
-    }, [auth]);
+    // useEffect(() => {
+    //     console.log('Auth state updated:', auth);
+    // }, [auth]);
 
     const contextValue = {
         auth,
@@ -96,8 +91,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     if (auth.loading) {
-        console.log('Rendering loading component');
-        return <div>Loading...</div>; // Your loading component here
+        return <div>Loading...</div>; // INSERT FUTURE LOADING COMPONENT HERE
     }
 
     console.log('Rendering main component');

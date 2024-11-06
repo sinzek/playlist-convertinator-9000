@@ -9,7 +9,9 @@ const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%?]).{8,24}/;
 
 export default function Register() {
-    const { setAuth } = useAuth();
+    const { verifyToken } = useAuth();
+
+    const navigate = useNavigate();
 
 	const [eyeOpen, isEyeOpen] = useState(false);
 
@@ -119,9 +121,9 @@ export default function Register() {
             });
             
             const accessToken = response?.data?.token;
-            const role = response?.data.role;
-            setAuth(user, pwd, role, accessToken);
             localStorage.setItem("accessToken", accessToken);
+            verifyToken(accessToken);
+            navigate("/"); // replace with from, { replace: true }
 		} catch (error) {
 			if (!error?.response) {
 				setErrMsg("Server did not respond!");
