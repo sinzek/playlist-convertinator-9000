@@ -1,10 +1,17 @@
-import { useState, useEffect, useRef, useContext } from "react";
-import AuthContext from "../context/AuthProvider.jsx";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import useAuth from "../context/useAuth.js";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { instance } from "../api/axios.js";
 
+
 export default function Login() {
-    const { setAuth } = useContext(AuthContext);
+    const { setAuth, verifyToken } = useAuth();
+
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // stores where user came from. if nowhere, set to homepage
+    const from = location.state?.from?.pathname || "/";
 
 	const userRef = useRef();
 	const errRef = useRef();
@@ -24,17 +31,15 @@ export default function Login() {
 	}, [user, pwd]);
 
 	const onFormSubmit = async (e) => {
+        // don't actually submit form -- causes page refresh
 		e.preventDefault();
 
+        // if no username or password
         if(!user || !pwd) {
             setErrMsg("ERROR: Invalid entry! Please fill out all required fields.");
 			errRef.current.focus();
 			return;
         }
-
-        let isChecked = document.getElementById(
-			"login-remember-me"
-		).checked;
 
         try {
             const response = await instance.post("/login", {
@@ -43,10 +48,9 @@ export default function Login() {
             });
 
             const accessToken = response?.data?.token;
-            const role = response?.data.role;
-            console.log(accessToken, role);
-            setAuth(user, pwd, role, accessToken);
             localStorage.setItem("accessToken", accessToken);
+            verifyToken(accessToken);
+            navigate(from, { replace: true });
         } catch(error) {
             if (!error?.response) {
 				setErrMsg("Server did not respond!");
@@ -59,10 +63,10 @@ export default function Login() {
 			return;
         }
 
-        localStorage.setItem("rememberMe", isChecked);
         setUser("");
         setPwd("");
-        console.log("Successfully signed in user!")
+        console.log("Successfully signed in user!");
+
 	};
 
 	return (
@@ -138,7 +142,7 @@ export default function Login() {
 								/>
 							</label>
 							<label
-								className="input input-bordered w-full flex items-center gap-2 mb-2 shadow-inner bg-base-200 focus-within:bg-base-100"
+								className="input input-bordered w-full flex items-center gap-2 shadow-inner bg-base-200 focus-within:bg-base-100"
 								htmlFor="login-password"
 							>
 								<svg
@@ -238,20 +242,6 @@ export default function Login() {
 								</label>
 							</label>
 							<div className="flex flex-col w-full mt-2 items-center justify-center">
-								<div className="flex flex-row w-full items-center justify-center">
-									<label
-										className="label cursor-pointer gap-2"
-										htmlFor="login-remember-me"
-									>
-										<input
-											type="checkbox"
-											className="checkbox checkbox-primary"
-											id="login-remember-me"
-										/>
-									</label>
-									<span className="label-text">Remember me</span>
-								</div>
-
 								<input
 									type="submit"
 									disabled={

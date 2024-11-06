@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { useLocation, NavLink } from "react-router-dom";
+import { useLocation, NavLink, useNavigate } from "react-router-dom";
 import "../index.css";
+import useAuth from "../context/useAuth";
 
 export default function Navbar() {
+    const { auth, logout } = useAuth();
 	const [convertState, setConvertState] = useState("hidden");
 	const convertStateName = " ";
 	// update convertState and convertStateName with setConvertState when conversion is completed or fails
@@ -17,35 +19,55 @@ export default function Navbar() {
 	const [curTooltip, setCurTooltip] = useState("");
 
 	const location = useLocation();
-	useEffect(() => {
-		if (location.pathname === "/create-account") {
-			setWantsCreateAcc(true);
-			setCurTooltip("Already have an account? Log in ↘");
-		} else if (location.pathname === "/log-in") {
-			setWantsCreateAcc(false);
-			setCurTooltip("Don't have an account just yet? Create one ↘");
-		} else if (location.pathname === "/") {
-			setCurTooltip("Boo!");
-		} else if (location.pathname === "/convert") {
-			setCurTooltip("YAY!!!!!!!!");
-		} else {
-			setCurTooltip("Uh oh, this page doesn't exist!");
-		}
-	}, [location]);
+    const navigate = useNavigate();
+    
+    const handleLogout = () => {
+        logout();
+        setLoginStatus(false);
+        navigate("/");
+    }
 
-	const background = document.getElementById("background");
-	function setBackgroundLighting(islight) {
-		if (!islight) {
-			background.style.setProperty("--background-brightness", "15%");
-		} else {
-			background.style.setProperty("--background-brightness", "100%");
-		}
-	}
+    useEffect(() => {
+        if(auth?.isAuthenticated) {
+            setLoginStatus(true);
+        } else {
+            setLoginStatus(false);
+        }
+    }, [auth?.isAuthenticated]);
 
 	useEffect(() => {
-		localStorage.setItem("islight", JSON.stringify(islight));
-		setBackgroundLighting(islight);
-	}, [islight]);
+        switch(location.pathname) {
+            case "/create-account":
+                setWantsCreateAcc(true);
+                setCurTooltip("Already have an account? Log in ↘");
+                break;
+            case "/log-in":
+                setWantsCreateAcc(false);
+                setCurTooltip("Don't have an account just yet? Create one ↘");
+                break;
+            case "/":
+                setCurTooltip("Boo!");
+                break;
+            case "/convert":
+                setCurTooltip("YAY!!!!!!!!");
+                break;
+            default:
+                setCurTooltip("Uh oh, this page doesn't exist!");
+        }
+    }, [location.pathname]);
+
+	useEffect(() => {
+        localStorage.setItem("islight", JSON.stringify(islight));
+        const background = document.getElementById("background");
+        if (background) {
+            background.style.setProperty(
+                "--background-brightness", 
+                islight ? "100%" : "15%"
+            );
+        }
+    }, [islight]);
+
+
 
 	return (
 		<>
@@ -76,18 +98,23 @@ export default function Navbar() {
 							</span>
 						</NavLink>
 					</li>
-					<li className={`${isLoggedIn ? null : "hidden"}`}>
+					<li className={isLoggedIn ? "" : "hidden"}>
 						<NavLink to="account" className="px-2 lg:px-4">
 							👤 Account
 						</NavLink>
 					</li>
-					<li>
+					<li className={isLoggedIn ? "hidden" : ""}>
 						<NavLink
 							to={wantsCreateAcc ? "create-account" : "log-in"}
-							className="px-2 lg:px-4"
+							className={`px-2 lg:px-4`}
 						>
 							{wantsCreateAcc ? "👤 Create account" : "🔒 Log in"}
 						</NavLink>
+					</li>
+                    <li className={isLoggedIn ? "" : "hidden"} onClick={handleLogout}>
+						<a className="px-2 lg:px-4">
+                            🔓 Log out
+						</a>
 					</li>
 				</ul>
 

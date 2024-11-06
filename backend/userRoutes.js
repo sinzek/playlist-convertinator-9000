@@ -385,10 +385,10 @@ userRoutes.route("/login").post(async (request, response) => {
 				.json({ error: "Invalid username or password." });
 		}
 
-		const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+		const token = jwt.sign(user, process.env.JWT_SECRET, {
 			expiresIn: process.env.JWT_EXPIRES_IN,
 		});
-        const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET, {
+        const refreshToken = jwt.sign(user, process.env.JWT_REFRESH_SECRET, {
             expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
         });
 
@@ -414,7 +414,7 @@ userRoutes.route("/login").post(async (request, response) => {
 	}
 });
 
-// refresh tokens
+// verifying refresh token and returning new access token
 userRoutes.route("/refresh-token").post(async (request, response) => {
     const { refreshToken } = request.body;
 
@@ -436,7 +436,7 @@ userRoutes.route("/refresh-token").post(async (request, response) => {
             }
 
             // Create a new access token
-            const token = jwt.sign({ id: decoded.id }, process.env.JWT_SECRET, {
+            const token = jwt.sign(user, process.env.JWT_SECRET, {
                 expiresIn: process.env.JWT_EXPIRES_IN,
             });
 

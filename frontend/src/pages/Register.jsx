@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useContext } from "react";
-import AuthContext from "../context/AuthProvider.jsx";
+import { useState, useEffect, useRef } from "react";
+import useAuth from "../context/useAuth.js";
 import { Link, useNavigate } from "react-router-dom";
 import { instance } from "../api/axios.js";
 
@@ -9,7 +9,7 @@ const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%?]).{8,24}/;
 
 export default function Register() {
-    const { setAuth } = useContext(AuthContext);
+    const { setAuth } = useAuth();
 
 	const [eyeOpen, isEyeOpen] = useState(false);
 
@@ -96,10 +96,6 @@ export default function Register() {
 			return;
 		}
 
-		let isChecked = document.getElementById(
-			"create-account-remember-me"
-		).checked;
-
 		const curDate = new Date();
 		const dateOptions = {
 			weekday: "long",
@@ -124,7 +120,6 @@ export default function Register() {
             
             const accessToken = response?.data?.token;
             const role = response?.data.role;
-            console.log(accessToken, role);
             setAuth(user, pwd, role, accessToken);
             localStorage.setItem("accessToken", accessToken);
 		} catch (error) {
@@ -139,7 +134,6 @@ export default function Register() {
 			return;
 		}
 
-		localStorage.setItem("rememberMe", isChecked);
         setEmail("");
         setUser("");
         setPwd("");
@@ -641,20 +635,6 @@ export default function Register() {
 
 							{/* REMEMBER ME & SUBMIT BUTTON */}
 							<div className="flex flex-col w-full mt-2 items-center justify-center">
-								<div className="flex flex-row w-full items-center justify-center">
-									<label
-										className="label cursor-pointer gap-2"
-										htmlFor="create-account-remember-me"
-									>
-										<input
-											type="checkbox"
-											className="checkbox checkbox-primary"
-											id="create-account-remember-me"
-										/>
-									</label>
-									<span className="label-text">Remember me</span>
-								</div>
-
 								<input
 									type="submit"
 									disabled={
