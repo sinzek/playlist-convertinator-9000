@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ErrorPage from "./pages/ErrorPage";
 import Account from "./pages/Account";
+import Admin from "./pages/Admin";
 import useAuth from "./context/useAuth";
 
 export const router = createBrowserRouter([
@@ -25,7 +26,7 @@ export const router = createBrowserRouter([
 				errorElement: <ErrorPage />,
 			},
 			{
-				element: <LoginProtectedRoutes />, // routes that require user to be logged in to access
+				element: <ProtectedRoutes allowedRoles = {["user", "admin"]}/>, // routes that require user to be logged in to access
 				children: [
 					{
 						path: "/account",
@@ -45,6 +46,19 @@ export const router = createBrowserRouter([
 				path: "/log-in",
 				element: <Login />,
 			},
+            {
+				path: "/unauthorized",
+				element: <ErrorPage />,
+			},
+            {
+				element: <ProtectedRoutes allowedRoles = {["admin"]} />, // routes that require user to have role admin to access
+				children: [
+					{
+						path: "/admin",
+						element: <Admin />,
+					},
+				],
+			},
 		],
 	},
 ]);
@@ -58,16 +72,20 @@ function MainApp() {
 	);
 }
 
-function LoginProtectedRoutes() {
+function ProtectedRoutes({allowedRoles}) {
 	const { auth } = useAuth();
     const location = useLocation();
 	return (
 		<>
-			{auth?.isAuthenticated ? (
-				<Outlet />
-			) : (
-				<Navigate to="/log-in" state={{ from: location }} replace />
-			)}
+            {allowedRoles?.includes(auth?.role) ? (
+                <Outlet />
+            ) : (
+                auth?.isAuthenticated ? (
+                    <Navigate to="/unauthorized" state={{ from: location }} replace />
+                ) : (
+                    <Navigate to="/log-in" state={{ from: location }} replace />
+                )
+            )}
 		</>
 	);
 }

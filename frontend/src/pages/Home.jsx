@@ -5,7 +5,7 @@ export default function Home() {
 	return (
 		<>
 			<div className="flex flex-col lg:flex-row">
-				<div className="card card-bg lg:ml-5 lg:mr-2.5 mx-5 lg:mb-0 mb-5 rounded-box flex flex-grow p-5 items-center text-center lg:items-start lg:text-left shadow-lg lg:w-3/5">
+				<div className="card card-bg lg:ml-5 lg:mr-2.5 mx-5 lg:mb-0 mb-5 rounded-box flex flex-grow p-5 items-center text-center justify-center lg:text-left shadow-lg lg:w-3/5">
 					<h1 className="text-5xl font-bold mb-2 text-primary">
 						Playlist Convertinator 9000
 					</h1>
@@ -44,7 +44,7 @@ export default function Home() {
 					>
 						<input type="checkbox" className="peer" />
 						<div className="collapse-title text-xl font-bold peer-checked:text-primary transition-colors ease-in-out">
-							1. Connect Your Accounts
+							1. 🔗 Connect Your Accounts
 						</div>
 						<div className="collapse-content">
 							<p>
@@ -59,7 +59,7 @@ export default function Home() {
 					>
 						<input type="checkbox" className="peer" />
 						<div className="collapse-title text-xl font-bold peer-checked:text-primary transition-colors ease-in-out">
-							2. Select Your Playlist
+							2. 👉 Select Your Playlist
 						</div>
 						<div className="collapse-content">
 							<p>
@@ -74,7 +74,7 @@ export default function Home() {
 					>
 						<input type="checkbox" className="peer" />
 						<div className="collapse-title text-xl font-bold peer-checked:text-primary transition-colors ease-in-out">
-							3. Convert and Enjoy
+							3. 😎 Convert and Enjoy
 						</div>
 						<div className="collapse-content">
 							<p>

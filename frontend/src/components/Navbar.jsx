@@ -24,6 +24,7 @@ export default function Navbar() {
     const handleLogout = () => {
         logout();
         setLoginStatus(false);
+        setWantsCreateAcc(false);
         navigate("/");
     }
 
@@ -88,6 +89,11 @@ export default function Navbar() {
 					<li>
 						<NavLink to="/" className="px-2 lg:px-4">
 							🏠 Home
+						</NavLink>
+					</li>
+                    <li className={auth?.role === "admin" ? "" : "hidden"}>
+						<NavLink to="admin" className="px-2 lg:px-4">
+							⚙️ Admin
 						</NavLink>
 					</li>
 					<li>

@@ -94,7 +94,6 @@ export const AuthProvider = ({ children }) => {
         return <div>Loading...</div>; // INSERT FUTURE LOADING COMPONENT HERE
     }
 
-    console.log('Rendering main component');
     return (
         <AuthContext.Provider value={contextValue}>
             {children}
