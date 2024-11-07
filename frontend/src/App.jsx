@@ -5,7 +5,7 @@ import Convert from "./pages/Convert";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ErrorPage from "./pages/ErrorPage";
-import Account from "./pages/Account";
+import Dashboard from "./pages/Dashbaord";
 import Admin from "./pages/Admin";
 import useAuth from "./context/useAuth";
 
@@ -29,8 +29,8 @@ export const router = createBrowserRouter([
 				element: <ProtectedRoutes allowedRoles = {["user", "admin"]}/>, // routes that require user to be logged in to access
 				children: [
 					{
-						path: "/account",
-						element: <Account />,
+						path: "/dashboard",
+						element: <Dashboard />,
 					},
 				],
 			},

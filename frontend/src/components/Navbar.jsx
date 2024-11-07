@@ -105,8 +105,8 @@ export default function Navbar() {
 						</NavLink>
 					</li>
 					<li className={isLoggedIn ? "" : "hidden"}>
-						<NavLink to="account" className="px-2 lg:px-4">
-							👤 Account
+						<NavLink to="dashboard" className="px-2 lg:px-4">
+                            🗂️ Dashboard
 						</NavLink>
 					</li>
 					<li className={isLoggedIn ? "hidden" : ""}>

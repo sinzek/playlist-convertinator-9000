@@ -12,7 +12,6 @@ let userRoutes = express.Router();
 
 // #1 - Retrieve all users
 userRoutes.route("/allusers").get(async (request, response) => {
-	console.log("route hit");
 	let db = database.getDb();
 	try {
 		let data = await db.collection("Credentials").find({}).toArray();
@@ -211,18 +210,11 @@ userRoutes.route("/users/:username").put(async (request, response) => {
 	let db = database.getDb();
 
 	try {
-		const hashedPassword = await bcrypt.hash(
-			request.body.password,
-			SALT_ROUNDS
-		);
 
 		let mongoObject = {
 			$set: {
-				username: request.body.username,
-				password: hashedPassword,
 				email: request.body.email,
 				role: request.body.role,
-				dateJoined: request.body.dateJoined,
 			},
 		};
 
@@ -230,8 +222,7 @@ userRoutes.route("/users/:username").put(async (request, response) => {
 			.collection("Credentials")
 			.updateOne({ username: request.params.username }, mongoObject);
 		response.json({
-			message: `User credentials successfully updated!\nEmail: ${request.body.email}\nUsername: ${request.body.username}\nRole: ${request.body.role}`,
-			token,
+			message: `User credentials successfully updated!\nEmail: ${request.body.email}\nRole: ${request.body.role}`
 		});
 	} catch (error) {
 		console.error("Error updating user credentials:", error);

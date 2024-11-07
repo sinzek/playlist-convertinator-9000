@@ -14,8 +14,11 @@ const Admin = () => {
 		direction: "asc",
 	});
 	const [selectedUser, setSelectedUser] = useState(null);
-    const [showOverlay, setShowOverlay] = useState(false);
-	const [viewPlaylist, setViewPlaylist] = useState(false);
+	const [showOverlay, setShowOverlay] = useState(false);
+	const [email, setEmail] = useState("");
+	const [role, setRole] = useState("");
+    const [hasChanges, setHasChanges] = useState(false);
+    const [clickedSaveChanges, setClickedSaveChanges] = useState(false);
 
 	useEffect(() => {
 		async function fetchUsers() {
@@ -25,7 +28,6 @@ const Admin = () => {
 				setTotalPlaylists(
 					response.data.reduce((sum, user) => sum + user.playlists.length, 0)
 				); // iterates thru all users, change in future for optimization
-				console.log("hello");
 				setLoading(false);
 			} catch (error) {
 				console.error("Error fetching users: ", error);
@@ -43,6 +45,46 @@ const Admin = () => {
 			user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			user.role.toLowerCase().includes(searchTerm.toLowerCase())
 	);
+
+    useEffect(() => {
+        // Check for changes when the component mounts or when the props change
+        if(selectedUser) {
+            setHasChanges((email !== selectedUser.email) || (role !== selectedUser.role));
+        }
+      }, [email, role, selectedUser]);
+
+	const saveChanges = async (e) => {
+        e.preventDefault();
+        if(email) {
+            selectedUser.email = email;
+        }
+        if(role) {
+            selectedUser.role = role;
+        }
+
+        console.log(selectedUser.username)
+
+        try {
+            await instance.put(`/users/${selectedUser.username}`, { email, role });
+            setHasChanges(false);
+            setClickedSaveChanges(true);
+        } catch(error) {
+            console.error("Could not update user credentials", error)
+        }
+        
+	};
+
+	useEffect(() => {
+		if (showOverlay === false) {
+			setEmail("");
+			setRole("");
+            setSelectedUser(null);
+            setClickedSaveChanges(false);
+		} else {
+            setEmail(selectedUser.email)
+            setRole(selectedUser.role);
+        }
+	}, [showOverlay]);
 
 	const sortedUsers = [...filteredUsers].sort((a, b) => {
 		if (a[sortConfig.key] < b[sortConfig.key]) {
@@ -72,7 +114,7 @@ const Admin = () => {
 				className="flex border-b border-base-300 hover:bg-base-200 items-center text-left cursor-pointer"
 				onClick={() => {
 					setSelectedUser(user);
-                    setShowOverlay(true);
+					setShowOverlay(true);
 					console.log("Selected user:", user.username); // For testing
 				}}
 			>
@@ -98,14 +140,14 @@ const Admin = () => {
 				<div className="card card-bg rounded-box flex-grow mx-5 lg:mb-0 mb-5 p-5 justify-center items-center text-left shadow-lg">
 					<h3 className="text-xl font-italic mb-5">User Management</h3>
 					<div className="flex flex-col w-full lg:flex-row mb-3 items-center">
-						<div className="stats shadow-md flex flex-1 bg-base-200">
-							<div className="stat flex flex-col lg:flex-row items-center">
-								<div className="stat-figure text-primary">
+						<div className="stats shadow-md flex flex-1 bg-base-200 w-full">
+							<div className="stat lg:flex-row items-center justify-items-stretch w-full">
+								<div className="stat-figure text-primary ">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										fill="none"
 										viewBox="0 0 24 24"
-										className="inline-block h-8 w-8 stroke-current hidden lg:block"
+										className="inline-block h-8 w-8 stroke-current"
 									>
 										<path
 											strokeLinecap="round"
@@ -115,7 +157,7 @@ const Admin = () => {
 										></path>
 									</svg>
 								</div>
-								<div className="stat-title">Total Users</div>
+								<div className="stat-title">Total Users:</div>
 								<div className="stat-value text-primary">{users.length}</div>
 							</div>
 							<div className="stat">
@@ -138,7 +180,7 @@ const Admin = () => {
 								<div className="stat-value text-primary">{totalPlaylists}</div>
 							</div>
 						</div>
-						<div className="input input-bordered flex flex-1 mb-4 mx-5 lg:w-1/4 bg-base-200 shadow-md mt-2 lg:mt-0">
+						<div className="input input-bordered flex flex-1 mb-2 lg:mb-0 mx-5 lg:w-1/4 bg-base-200 shadow-md mt-5 lg:mt-0">
 							<input
 								type="text"
 								placeholder="🔍 Search users..."
@@ -201,17 +243,62 @@ const Admin = () => {
 
 			{showOverlay && (
 				<Overlay onClose={() => setShowOverlay(false)}>
-					<h2 className="text-xl font-bold mb-4">User Details</h2>
-					<div className="mb-2 flex flex-row"><p className="font-semibold">Username: </p>{selectedUser.username}</div>
-					<div className="mb-2 flex flex-row"><p className="font-semibold">Email: </p>{selectedUser.email}</div>
-                    <div className="mb-2 flex flex-row"><p className="font-semibold">Date Joined: </p>{selectedUser.dateJoined}</div>
-					<div className="mb-4 flex flex-row"><p className="font-semibold">Role: </p>{selectedUser.role}</div>
-					<button
-						className="btn btn-primary btn-sm"
-						onClick={() => setShowOverlay(false)}
-					>
-						Close
-					</button>
+                    <div className="flex flex-row gap-4 w-full items-center mb-4">
+                        <h2 className="text-2xl font-bold">User Details</h2>
+                        <h3 className={hasChanges || !clickedSaveChanges ? "hidden" : "text-sm text-success"}>Changes saved successfully!</h3>
+                    </div>
+					
+					<form className="w-full text-lg" onSubmit={(e) => saveChanges(e)}>
+						<div className="mb-2 flex flex-row">
+							<p className="font-semibold">Username: </p>
+							{selectedUser.username}
+						</div>
+						<div className="mb-2 flex flex-row items-center">
+							<p className="font-semibold">Email: </p>
+							<input
+								className="input input-sm text-lg w-full transition-color duration-150 bg-base-200 hover:bg-base-300"
+								type="email"
+								autoComplete="off"
+								value={email ? email : selectedUser.email}
+								onChange={(e) => setEmail(e.target.value)}
+							></input>
+						</div>
+						<div className="mb-2 flex flex-row">
+							<p className="font-semibold">Date Joined: </p>
+							{selectedUser.dateJoined}
+						</div>
+						<div className="mt-4 mb-6 flex flex-row items-center">
+							<p className="font-semibold">Role: </p>
+							<div className="dropdown">
+								<div tabIndex={0} role="button" className="btn btn-sm text-lg font-normal bg-base-200 hover:bg-base-300 border-0">
+									{role ? role : selectedUser.role} ☰
+								</div>
+								<ul
+									tabIndex={0}
+									className="dropdown-content menu bg-base-300 rounded-box z-[1] w-40 p-2 shadow text-lg"
+								>
+									<li onClick={() => setRole("user")}>
+										<a>user</a>
+									</li>
+									<li onClick={() => setRole("admin")}>
+										<a>admin</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<input
+							className="btn btn-success btn-sm mr-4 text-base-100"
+							type="submit"
+							value="Save changes"
+							disabled={!hasChanges}
+						></input>
+						<button
+							className="btn btn-error btn-sm text-base-100"
+							onClick={() => setShowOverlay(false)}
+						>
+							Close
+						</button>
+					</form>
 				</Overlay>
 			)}
 		</>
