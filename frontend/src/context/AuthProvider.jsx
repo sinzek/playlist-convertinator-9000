@@ -7,7 +7,9 @@ export const AuthProvider = ({ children }) => {
     const [auth, setAuth] = useState({ 
         isAuthenticated: false, 
         token: null, 
+        email: "",
         user: "", 
+        pwdHash: "",
         role: "", 
         loading: true,
         connectedAccounts: false
@@ -17,7 +19,9 @@ export const AuthProvider = ({ children }) => {
         setAuth({
             isAuthenticated: false,
             token: null,
+            email: "",
             user: "",
+            pwdHash: "",
             role: "",
             loading: false,
             connectedAccounts: false
@@ -35,7 +39,9 @@ export const AuthProvider = ({ children }) => {
                     setAuth({
                         isAuthenticated: true,
                         token: token,
+                        email: decodedToken.email,
                         user: decodedToken.username,
+                        pwdHash: decodedToken.password,
                         role: decodedToken.role,
                         loading: false
                     });

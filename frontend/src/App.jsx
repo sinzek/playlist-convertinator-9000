@@ -5,7 +5,7 @@ import Convert from "./pages/Convert";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ErrorPage from "./pages/ErrorPage";
-import Dashboard from "./pages/Dashbaord";
+import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import useAuth from "./context/useAuth";
 
