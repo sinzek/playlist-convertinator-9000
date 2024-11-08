@@ -82,7 +82,8 @@ export default function Login() {
 					<Link
 						to="../create-account"
 						role="tab"
-						className={`tab text-xl font-bold h-[3rem] bg-base-300`}
+						className={`tab text-xl font-bold h-[3rem] bg-base-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+                        tabIndex="0"
 					>
 						Create account
 					</Link>
@@ -174,7 +175,7 @@ export default function Login() {
 									{/* this hidden checkbox controls the state */}
 									<input
 										type="checkbox"
-										className=""
+										className="focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
 										value={false}
 										checked={eyeOpen}
 										onChange={() => isEyeOpen(!eyeOpen)}

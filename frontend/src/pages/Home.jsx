@@ -10,12 +10,12 @@ export default function Home() {
 						Playlist Convertinator 9000
 					</h1>
 					<h3 className="text-xl font-italic mb-5">
-						A reliable Apple Music to YouTube Music playlist converter
+						A reliable Spotify to YouTube Music playlist converter (and eventually more!)
 					</h3>
 					<p className="text-center lg:text-left">
 						Are you tired of the hassle of switching music streaming platforms?
 						With Playlist Convertinator 9000, it's easy for you to seamlessly
-						transfer your favorite playlists from Apple Music to YouTube Music.
+						transfer your favorite playlists from Spotify to YouTube Music.
 						Whether you’re switching services or just want to share your
 						playlists with friends, this tool is here to help.
 					</p>
@@ -48,7 +48,7 @@ export default function Home() {
 						</div>
 						<div className="collapse-content">
 							<p>
-								Start by signing up and linking your Apple Music and YouTube
+								Start by signing up and linking your Spotify and YouTube
 								Music accounts for seamless integration
 							</p>
 						</div>
@@ -63,7 +63,7 @@ export default function Home() {
 						</div>
 						<div className="collapse-content">
 							<p>
-								Choose the Apple Music playlist you want to convert or select
+								Choose the Spotify playlist you want to convert or select
 								songs to add
 							</p>
 						</div>

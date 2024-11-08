@@ -123,7 +123,7 @@ export default function Register() {
             const accessToken = response?.data?.token;
             localStorage.setItem("accessToken", accessToken);
             verifyToken(accessToken);
-            navigate("/"); // replace with from, { replace: true }
+            navigate("/dashboard"); // replace with from, { replace: true }
 		} catch (error) {
 			if (!error?.response) {
 				setErrMsg("Server did not respond!");
@@ -150,7 +150,8 @@ export default function Register() {
 					<Link
 						to="../log-in"
 						role="tab"
-						className={`tab text-xl font-bold h-[3rem] bg-base-300`}
+						className={`tab text-xl font-bold h-[3rem] bg-base-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+                        tabIndex="0"
 					>
 						Log in
 					</Link>
@@ -442,7 +443,7 @@ export default function Register() {
 									{/* this hidden checkbox controls the state */}
 									<input
 										type="checkbox"
-										className=""
+										className="focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
 										value={false}
 										checked={eyeOpen}
 										onChange={() => isEyeOpen(!eyeOpen)}

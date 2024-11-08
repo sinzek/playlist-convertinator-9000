@@ -9,7 +9,8 @@ export const AuthProvider = ({ children }) => {
         token: null, 
         user: "", 
         role: "", 
-        loading: true
+        loading: true,
+        connectedAccounts: false
     });
 
     const logout = () => {
@@ -19,6 +20,7 @@ export const AuthProvider = ({ children }) => {
             user: "",
             role: "",
             loading: false,
+            connectedAccounts: false
         });
         localStorage.removeItem("accessToken");
     };
@@ -91,7 +93,10 @@ export const AuthProvider = ({ children }) => {
     };
 
     if (auth.loading) {
-        return <div>Loading...</div>; // INSERT FUTURE LOADING COMPONENT HERE
+        return 
+        <>
+            <div className="skeleton h-32 w-32"></div>
+        </>
     }
 
     return (

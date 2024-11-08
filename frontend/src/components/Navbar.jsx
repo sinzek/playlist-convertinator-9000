@@ -4,9 +4,9 @@ import "../index.css";
 import useAuth from "../context/useAuth";
 
 export default function Navbar() {
-    const { auth, logout } = useAuth();
+	const { auth, logout } = useAuth();
 	const [convertState, setConvertState] = useState("hidden");
-	const convertStateName = " ";
+	const [convertStateName, setConvertStateName] = useState("");
 	// update convertState and convertStateName with setConvertState when conversion is completed or fails
 	// update 'login' to 'sign out' if user is logged in
 	// only show 'account' if user is logged in
@@ -19,56 +19,62 @@ export default function Navbar() {
 	const [curTooltip, setCurTooltip] = useState("");
 
 	const location = useLocation();
-    const navigate = useNavigate();
-    
-    const handleLogout = () => {
-        logout();
-        setLoginStatus(false);
-        setWantsCreateAcc(false);
-        navigate("/");
-    }
+	const navigate = useNavigate();
 
-    useEffect(() => {
-        if(auth?.isAuthenticated) {
-            setLoginStatus(true);
-        } else {
-            setLoginStatus(false);
-        }
-    }, [auth?.isAuthenticated]);
+	const handleLogout = () => {
+		logout();
+		setLoginStatus(false);
+		setWantsCreateAcc(false);
+		navigate("/");
+	};
 
 	useEffect(() => {
-        switch(location.pathname) {
-            case "/create-account":
-                setWantsCreateAcc(true);
-                setCurTooltip("Already have an account? Log in ↘");
-                break;
-            case "/log-in":
-                setWantsCreateAcc(false);
-                setCurTooltip("Don't have an account just yet? Create one ↘");
-                break;
-            case "/":
-                setCurTooltip("Boo!");
-                break;
-            case "/convert":
-                setCurTooltip("YAY!!!!!!!!");
-                break;
-            default:
-                setCurTooltip("Uh oh, this page doesn't exist!");
-        }
-    }, [location.pathname]);
+		if (auth?.isAuthenticated) {
+			setLoginStatus(true);
+		} else {
+			setLoginStatus(false);
+		}
+	}, [auth?.isAuthenticated]);
 
 	useEffect(() => {
-        localStorage.setItem("islight", JSON.stringify(islight));
-        const background = document.getElementById("background");
-        if (background) {
-            background.style.setProperty(
-                "--background-brightness", 
-                islight ? "100%" : "15%"
-            );
-        }
-    }, [islight]);
+		switch (location.pathname) {
+			case "/create-account":
+				setWantsCreateAcc(true);
+				setCurTooltip("Already have an account? Log in ↘");
+				break;
+			case "/log-in":
+				setWantsCreateAcc(false);
+				setCurTooltip("Don't have an account just yet? Create one ↘");
+				break;
+			case "/":
+				setCurTooltip("Hey! Just hover over me on any page for a tip!");
+				break;
+			case "/convert":
+				setCurTooltip("YAY!!!!!!!!");
+				break;
+			case "/dashboard":
+				setCurTooltip(
+					"Welcome to the dashboard! Here, you can connect your accounts, view your playlists, edit your profile, and more!"
+				);
+				break;
+            case "/admin":
+                setCurTooltip("◕‿↼");
+                break;
+			default:
+				setCurTooltip("Uh oh, this page doesn't exist!");
+		}
+	}, [location.pathname]);
 
-
+	useEffect(() => {
+		localStorage.setItem("islight", JSON.stringify(islight));
+		const background = document.getElementById("background");
+		if (background) {
+			background.style.setProperty(
+				"--background-brightness",
+				islight ? "100%" : "15%"
+			);
+		}
+	}, [islight]);
 
 	return (
 		<>
@@ -87,17 +93,29 @@ export default function Navbar() {
 					id="navbar-links"
 				>
 					<li>
-						<NavLink to="/" className="px-2 lg:px-4">
+						<NavLink
+							to="/"
+							className="px-2 lg:px-4 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+							tabIndex="0"
+						>
 							🏠 Home
 						</NavLink>
 					</li>
-                    <li className={auth?.role === "admin" ? "" : "hidden"}>
-						<NavLink to="admin" className="px-2 lg:px-4">
+					<li className={auth?.role === "admin" ? "" : "hidden"}>
+						<NavLink
+							to="admin"
+							className="px-2 lg:px-4 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+							tabIndex="0"
+						>
 							⚙️ Admin
 						</NavLink>
 					</li>
 					<li>
-						<NavLink to="convert" className="px-2 lg:px-4">
+						<NavLink
+							to="convert"
+							className="px-2 lg:px-4 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+							tabIndex="0"
+						>
 							🔄 Convert
 							<span className={`badge badge-sm ${convertState}`}>
 								{convertStateName}
@@ -105,21 +123,29 @@ export default function Navbar() {
 						</NavLink>
 					</li>
 					<li className={isLoggedIn ? "" : "hidden"}>
-						<NavLink to="dashboard" className="px-2 lg:px-4">
-                            🗂️ Dashboard
+						<NavLink
+							to="dashboard"
+							className="px-2 lg:px-4 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+							tabIndex="0"
+						>
+							🗂️ Dashboard
 						</NavLink>
 					</li>
 					<li className={isLoggedIn ? "hidden" : ""}>
 						<NavLink
 							to={wantsCreateAcc ? "create-account" : "log-in"}
-							className={`px-2 lg:px-4`}
+							className={`px-2 lg:px-4 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+							tabIndex="0"
 						>
 							{wantsCreateAcc ? "👤 Create account" : "🔒 Log in"}
 						</NavLink>
 					</li>
-                    <li className={isLoggedIn ? "" : "hidden"} onClick={handleLogout}>
-						<a className="px-2 lg:px-4">
-                            🔓 Log out
+					<li className={isLoggedIn ? "" : "hidden"} onClick={handleLogout}>
+						<a
+							className="px-2 lg:px-4 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+							tabIndex="0"
+						>
+							🔓 Log out
 						</a>
 					</li>
 				</ul>

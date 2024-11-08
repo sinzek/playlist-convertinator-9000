@@ -4,6 +4,9 @@ import { FixedSizeList } from "react-window";
 import { instance } from "../api/axios";
 
 const Admin = () => {
+	// TODO: ADD DELETE USER FUNCTIONALITY
+	// MAYBE: DOUBLE CHECK FOR ADMIN ROLE BEFORE THIS COMPONENT LOADS
+
 	const [users, setUsers] = useState([]);
 	const [totalPlaylists, setTotalPlaylists] = useState(0);
 	const [loading, setLoading] = useState(true);
@@ -17,8 +20,10 @@ const Admin = () => {
 	const [showOverlay, setShowOverlay] = useState(false);
 	const [email, setEmail] = useState("");
 	const [role, setRole] = useState("");
-    const [hasChanges, setHasChanges] = useState(false);
-    const [clickedSaveChanges, setClickedSaveChanges] = useState(false);
+	const [hasChanges, setHasChanges] = useState(false);
+	const [clickedSaveChanges, setClickedSaveChanges] = useState(false);
+	const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+	const [usernameDel, setUsernameDel] = useState("");
 
 	useEffect(() => {
 		async function fetchUsers() {
@@ -46,44 +51,60 @@ const Admin = () => {
 			user.role.toLowerCase().includes(searchTerm.toLowerCase())
 	);
 
-    useEffect(() => {
-        // Check for changes when the component mounts or when the props change
-        if(selectedUser) {
-            setHasChanges((email !== selectedUser.email) || (role !== selectedUser.role));
-        }
-      }, [email, role, selectedUser]);
+	useEffect(() => {
+		// Check for changes when the component mounts or when the props change
+		if (selectedUser) {
+			setHasChanges(email !== selectedUser.email || role !== selectedUser.role);
+		}
+	}, [email, role, selectedUser]);
 
 	const saveChanges = async (e) => {
-        e.preventDefault();
-        if(email) {
-            selectedUser.email = email;
-        }
-        if(role) {
-            selectedUser.role = role;
-        }
+		e.preventDefault();
+		if (email) {
+			selectedUser.email = email;
+		}
+		if (role) {
+			selectedUser.role = role;
+		}
 
-        console.log(selectedUser.username)
+		console.log(selectedUser.username);
 
-        try {
-            await instance.put(`/users/${selectedUser.username}`, { email, role });
-            setHasChanges(false);
-            setClickedSaveChanges(true);
-        } catch(error) {
-            console.error("Could not update user credentials", error)
-        }
-        
+		try {
+			await instance.put(`/users/${selectedUser.username}`, { email, role });
+			setHasChanges(false);
+			setClickedSaveChanges(true);
+			setShowConfirmDelete(false);
+			setUsernameDel("");
+		} catch (error) {
+			console.error("Could not update user credentials!", error);
+		}
 	};
+
+    const deleteUser = async () => {
+        try {
+            if(selectedUser.username === usernameDel) {
+                await instance.delete(`/users/${selectedUser.username}`);
+            }
+            setShowOverlay(false);
+
+            window.location.reload();
+        } catch(error) {
+            console.error("Could not delete user!", error);
+        }
+    }
 
 	useEffect(() => {
 		if (showOverlay === false) {
 			setEmail("");
 			setRole("");
-            setSelectedUser(null);
-            setClickedSaveChanges(false);
+			setSelectedUser(null);
+			setClickedSaveChanges(false);
+			setShowConfirmDelete(false);
+			setUsernameDel("");
 		} else {
-            setEmail(selectedUser.email)
-            setRole(selectedUser.role);
-        }
+			setEmail(selectedUser.email);
+			setRole(selectedUser.role);
+		}
 	}, [showOverlay]);
 
 	const sortedUsers = [...filteredUsers].sort((a, b) => {
@@ -115,7 +136,6 @@ const Admin = () => {
 				onClick={() => {
 					setSelectedUser(user);
 					setShowOverlay(true);
-					console.log("Selected user:", user.username); // For testing
 				}}
 			>
 				<div className="flex-1 p-4">{user.username}</div>
@@ -243,11 +263,42 @@ const Admin = () => {
 
 			{showOverlay && (
 				<Overlay onClose={() => setShowOverlay(false)}>
-                    <div className="flex flex-row gap-4 w-full items-center mb-4">
-                        <h2 className="text-2xl font-bold">User Details</h2>
-                        <h3 className={hasChanges || !clickedSaveChanges ? "hidden" : "text-sm text-success"}>Changes saved successfully!</h3>
-                    </div>
-					
+					<div className="flex flex-row justify-between w-full items-center mb-4">
+						<h2 className="text-2xl font-bold mr-4">User Details</h2>
+						<h3
+							className={
+								hasChanges || !clickedSaveChanges || showConfirmDelete
+									? "hidden"
+									: "text-sm text-success"
+							}
+						>
+							Changes saved successfully!
+						</h3>
+						<div
+							className={`${
+								showConfirmDelete && !hasChanges
+									? "flex flex-row items-center"
+									: "hidden"
+							}`}
+						>
+							<input
+								className="input input-sm input-error w-[200px] text-error text-xs placeholder-error mr-2"
+								type="text"
+								placeholder="Enter username to confirm"
+								onChange={(e) => setUsernameDel(e.target.value)}
+								value={usernameDel}
+							/>
+							<button
+								className="btn btn-xs btn-success"
+								type="button"
+								disabled={usernameDel != selectedUser.username ? true : false}
+                                onClick={() => deleteUser()}
+							>
+								✔
+							</button>
+						</div>
+					</div>
+
 					<form className="w-full text-lg" onSubmit={(e) => saveChanges(e)}>
 						<div className="mb-2 flex flex-row">
 							<p className="font-semibold">Username: </p>
@@ -270,7 +321,11 @@ const Admin = () => {
 						<div className="mt-4 mb-6 flex flex-row items-center">
 							<p className="font-semibold">Role: </p>
 							<div className="dropdown">
-								<div tabIndex={0} role="button" className="btn btn-sm text-lg font-normal bg-base-200 hover:bg-base-300 border-0">
+								<div
+									tabIndex={0}
+									role="button"
+									className="btn btn-sm text-lg font-normal bg-base-200 hover:bg-base-300 border-0"
+								>
 									{role ? role : selectedUser.role} ☰
 								</div>
 								<ul
@@ -286,18 +341,34 @@ const Admin = () => {
 								</ul>
 							</div>
 						</div>
-						<input
-							className="btn btn-success btn-sm mr-4 text-base-100"
-							type="submit"
-							value="Save changes"
-							disabled={!hasChanges}
-						></input>
-						<button
-							className="btn btn-error btn-sm text-base-100"
-							onClick={() => setShowOverlay(false)}
-						>
-							Close
-						</button>
+						<div className="flex flex-row w-full justify-between">
+							<input
+								className="btn btn-success btn-sm text-base-100"
+								type="submit"
+								value="Save changes"
+								disabled={!hasChanges}
+							></input>
+							<button
+								className="btn btn-info btn-sm relative text-base-100"
+								onClick={() => setShowOverlay(false)}
+								type="button"
+							>
+								Close
+							</button>
+							<button
+								className={`btn ${
+									showConfirmDelete ? "btn-warning" : "btn-error"
+								} btn-sm text-base-100`}
+								onClick={() => {
+									setShowConfirmDelete(!showConfirmDelete);
+									setUsernameDel("");
+								}}
+								type="button"
+								disabled={hasChanges}
+							>
+								{showConfirmDelete ? "Cancel" : "Delete user"}
+							</button>
+						</div>
 					</form>
 				</Overlay>
 			)}
