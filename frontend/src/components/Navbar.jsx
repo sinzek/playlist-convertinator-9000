@@ -66,7 +66,7 @@ export default function Navbar() {
 				className="drawer-toggle w-full"
 				onChange={() => setDrawerOpen(!drawerOpen)}
 			/>
-			<header className="flex drawer-content items-stretch justify-start lg:justify-center w-full pt-2 pb-5 z-[999] animate-fade-down">
+			<header className="flex drawer-content items-stretch justify-start lg:justify-center w-full pt-2 pb-5 z-[999]">
 				<div className="flex lg:hidden header-bg rounded-box w-[3.5rem] mr-0 lg:mr-2 ml-2 lg:ml-0 justify-center shadow-lg">
 					<div className="flex-none lg:hidden">
 						<label
