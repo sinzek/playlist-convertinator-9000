@@ -66,7 +66,7 @@ export default function Navbar() {
 				className="drawer-toggle w-full"
 				onChange={() => setDrawerOpen(!drawerOpen)}
 			/>
-			<header className="flex drawer-content items-stretch justify-start lg:justify-center w-full pt-2 pb-5 z-[999]">
+			<header className="flex drawer-content items-stretch justify-start lg:justify-center w-full pt-2 pb-5 z-[999] animate-fade-down">
 				<div className="flex lg:hidden header-bg rounded-box w-[3.5rem] mr-0 lg:mr-2 ml-2 lg:ml-0 justify-center shadow-lg">
 					<div className="flex-none lg:hidden">
 						<label
@@ -191,7 +191,7 @@ export default function Navbar() {
 
 						{/* sun icon */}
 						<svg
-							className="swap-off h-6 w-6 fill-current"
+							className="swap-off h-5 w-5 fill-current"
 							viewBox="0 0 512 512"
 							fill="currentColor"
 						>
@@ -200,7 +200,7 @@ export default function Navbar() {
 
 						{/* moon icon */}
 						<svg
-							className="swap-on h-6 w-6 fill-current"
+							className="swap-on h-5 w-5 fill-current"
 							fill="currentColor"
 							viewBox="0 0 16 16"
 						>

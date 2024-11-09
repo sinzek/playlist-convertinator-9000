@@ -157,7 +157,7 @@ const Admin = () => {
 	return (
 		<>
 			<div className="flex flex-col w-full">
-				<div className="card card-bg rounded-box flex-grow mx-5 lg:mb-0 mb-5 p-5 justify-center items-center text-left shadow-lg">
+				<div className="card card-bg rounded-box flex-grow mx-5 lg:mx-[20%] mb-5 p-5 justify-center items-center text-left shadow-lg animate-fade animate-once">
 					<h3 className="text-xl font-italic mb-5">User Management</h3>
 					<div className="flex flex-col w-full lg:flex-row mb-3 items-center">
 						<div className="stats shadow-md flex flex-1 bg-base-200 w-full">

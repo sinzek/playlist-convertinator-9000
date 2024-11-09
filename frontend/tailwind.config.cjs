@@ -13,7 +13,7 @@ export default {
 			display: ["Poppins"],
 		},
 	},
-	plugins: [require("@tailwindcss/typography"), require("daisyui")],
+	plugins: [require("tailwindcss-animated"), require("daisyui")],
 	daisyui: {
 		themes: ["synthwave", "fantasy"],
 	},

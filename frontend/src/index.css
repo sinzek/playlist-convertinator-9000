@@ -43,13 +43,13 @@
 }
 
 .card-bg {
-	@apply bg-base-100 ring-1 ring-primary/10;
+	@apply bg-base-100 ring-1 ring-primary/10 bg-opacity-60;
 }
 .header-bg {
 	@apply bg-base-100 bg-opacity-60 backdrop-blur-2xl ring-1 ring-primary/10;
 }
 .card-s-bg {
-	@apply bg-base-100 ring-1 ring-secondary/10;
+	@apply bg-base-100 ring-1 ring-secondary/10 bg-opacity-60;
 }
 
 #navbar-links a.active,

@@ -5,7 +5,7 @@ import { instance } from "../api/axios.js";
 
 
 export default function Login() {
-    const { verifyToken } = useAuth();
+    const { verifyToken, setAuth } = useAuth();
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -23,7 +23,7 @@ export default function Login() {
 	const [eyeOpen, isEyeOpen] = useState(false);
 
 	useEffect(() => {
-	    userRef.current.focus();
+		userRef.current.focus();
 	}, []);
 
 	useEffect(() => {
@@ -42,10 +42,18 @@ export default function Login() {
         }
 
         try {
+			setAuth(prev => ({ 
+                ...prev, 
+                loading: true 
+            }));
             const response = await instance.post("/login", {
                 username: user,
                 password: pwd,
             });
+			setAuth(prev => ({ 
+                ...prev, 
+                loading: false 
+            }));
 
             const accessToken = response?.data?.token;
             localStorage.setItem("accessToken", accessToken);

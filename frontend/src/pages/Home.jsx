@@ -5,48 +5,55 @@ export default function Home() {
 	return (
 		<>
 			<div className="flex flex-col lg:flex-row">
-				<div className="card card-bg lg:ml-5 lg:mr-2.5 mx-5 lg:mb-0 mb-5 rounded-box flex flex-grow p-5 items-center text-center justify-center lg:text-left shadow-lg lg:w-3/5">
-					<h1 className="text-5xl font-bold mb-2 text-primary">
-						Playlist Convertinator 9000
+				<div className="card card-bg lg:ml-[20%] lg:mr-2.5 mx-5 lg:mb-0 mb-5 rounded-box flex flex-grow p-5 justify-center lg:text-left shadow-lg lg:w-3/5 animate-fade lg:animate-fade-right animate-once overflow-clip">
+					<h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold mb-10 text-primary lg:mx-[5rem]">
+						Playlist Convertinator
 					</h1>
-					<h3 className="text-xl font-italic mb-5">
+					<h3 className="text-2xl font-italic mb-10 lg:mx-[5rem]">
 						A reliable Spotify to YouTube Music playlist converter (and
 						eventually more!)
 					</h3>
-					<p className="text-center lg:text-left">
+					<p className=":text-left lg:mx-[5rem] text-lg text-pretty mb-10">
 						Are you tired of the hassle of switching music streaming platforms?
 						With Playlist Convertinator 9000, it's easy for you to seamlessly
 						transfer your favorite playlists from Spotify to YouTube Music.
 						Whether you’re switching services or just want to share your
 						playlists with friends, this tool is here to help.
 					</p>
-					<div className="flex items-center justify-center w-full m-auto">
+					<div className="flex justify-start w-full m-auto lg:mx-[5rem]">
 						<Link to="/convert">
-							<button className="flex btn btn-primary w-[15rem] h-[4rem] bg-repeat-shine-effect text-center justify-center hover:shadow-xl font-bold text-2xl mt-5 lg:mt-0">
-								Convert Now
+							<button className="btn btn-primary bg-repeat-shine-effect hover:shadow-xl text-5xl px-10 h-[4rem] pb-1">
+							<svg
+								viewBox="0 0 512 512"
+								fill="currentColor"
+								className="h-10 w-9 stroke-current pt-1"
+							>
+								<path d="M142.9 142.9c62.2-62.2 162.7-62.5 225.3-1L327 183c-6.9 6.9-8.9 17.2-5.2 26.2S334.3 224 344 224h128c13.3 0 24-10.7 24-24V72c0-9.7-5.8-18.5-14.8-22.2S461.9 48.1 455 55l-41.6 41.6c-87.6-86.5-228.7-86.2-315.8 1-24.4 24.4-42 53.1-52.8 83.8-5.9 16.7 2.9 34.9 19.5 40.8s34.9-2.9 40.8-19.5c7.7-21.8 20.2-42.3 37.8-59.8zM16 312v128c0 9.7 5.8 18.5 14.8 22.2s19.3 1.7 26.2-5.2l41.6-41.6c87.6 86.5 228.7 86.2 315.8-1 24.4-24.4 42.1-53.1 52.9-83.7 5.9-16.7-2.9-34.9-19.5-40.8s-34.9 2.9-40.8 19.5c-7.7 21.8-20.2 42.3-37.8 59.8-62.2 62.2-162.7 62.5-225.3 1L185 329c6.9-6.9 8.9-17.2 5.2-26.2S177.7 288 168 288H40c-13.3 0-24 10.7-24 24z" />
+							</svg>
+								Start
 							</button>
 						</Link>
 					</div>
 				</div>
-				<div className="card card-bg lg:mr-5 lg:ml-2.5 mx-5 lg:mb-0 mb-5 rounded-box grid flex-grow justify-center items-center p-5 shadow-lg">
+				<div className="card card-bg lg:mr-[20%] lg:ml-2.5 mx-5 lg:mb-0 mb-5 rounded-box grid flex-grow justify-center items-center p-5 shadow-lg animate-fade lg:animate-fade-left animate-once">
 					<img
 						src="/Graphic.gif"
-						className="grow-shrink-effect png-shadow h-auto w-[20rem] w-[10rem] lg:w-[30rem]"
+						className="grow-shrink-effect png-shadow h-auto w-[20rem] lg:w-[40rem]"
 					/>
 				</div>
 			</div>
 			<div className="flex flex-col">
-				<div className="card card-s-bg rounded-box flex-grow mx-5 lg:mb-0 mb-5 lg:mt-5 p-5 justify-center items-start text-left shadow-lg">
-					<h2 className="text-3xl mb-5 text-secondary font-bold">
+				<div className="card card-s-bg rounded-box flex-grow mx-5 lg:mx-[20%] lg:mb-0 mb-5 lg:mt-5 p-5 justify-center items-start text-left shadow-lg animate-fade lg:animate-fade-up animate-once">
+					<h2 className="text-3xl lg:text-4xl mb-5 text-secondary font-bold lg:mx-[5rem]">
 						How it works
 					</h2>
 
 					<div
 						tabIndex={0}
-						className="collapse collapse-arrow hover:shadow-lg hover:ring-1 hover:ring-secondary/5 transition-all ease-in-out"
+						className="collapse collapse-arrow hover:shadow-lg hover:ring-1 hover:ring-secondary/5 transition-all ease-in-out lg:w-[40rem] lg:mx-[4rem]"
 					>
 						<input type="checkbox" className="peer" />
-						<div className="flex flex-row gap-2 collapse-title text-lg lg:text-xl font-bold peer-checked:text-secondary transition-colors ease-in-out">
+						<div className="flex flex-row gap-2 collapse-title text-lg lg:text-xl font-bold peer-checked:text-secondary transition-colors ease-in-out duration-150">
 							<svg
 								viewBox="0 0 800 900"
 								fill="currentColor"
@@ -65,7 +72,7 @@ export default function Home() {
 					</div>
 					<div
 						tabIndex={0}
-						className="collapse collapse-arrow hover:shadow-lg hover:ring-1 hover:ring-secondary/5 transition-all ease-in-out"
+						className="collapse collapse-arrow hover:shadow-lg hover:ring-1 hover:ring-secondary/5 transition-all ease-in-out lg:w-[40rem] lg:mx-[4rem]"
 					>
 						<input type="checkbox" className="peer" />
 						<div className="flex flex-row gap-2 collapse-title text-lg lg:text-xl font-bold peer-checked:text-secondary transition-colors ease-in-out">
@@ -88,7 +95,7 @@ export default function Home() {
 					</div>
 					<div
 						tabIndex={0}
-						className="collapse collapse-arrow hover:shadow-lg hover:ring-1 hover:ring-secondary/5 transition-all ease-in-out"
+						className="collapse collapse-arrow hover:shadow-lg hover:ring-1 hover:ring-secondary/5 transition-all ease-in-out lg:w-[40rem] lg:mx-[4rem]"
 					>
 						<input type="checkbox" className="peer" />
 						<div className="flex flex-row gap-2 collapse-title text-lg lg:text-xl font-bold peer-checked:text-secondary transition-colors ease-in-out">

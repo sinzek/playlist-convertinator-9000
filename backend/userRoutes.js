@@ -379,7 +379,8 @@ userRoutes.route("/login").post(async (request, response) => {
 		const token = jwt.sign(user, process.env.JWT_SECRET, {
 			expiresIn: process.env.JWT_EXPIRES_IN,
 		});
-        const refreshToken = jwt.sign(user, process.env.JWT_REFRESH_SECRET, {
+
+        const refreshToken = jwt.sign({username: user.username}, process.env.JWT_REFRESH_SECRET, {
             expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
         });
 
