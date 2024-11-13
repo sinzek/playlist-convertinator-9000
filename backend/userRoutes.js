@@ -148,9 +148,9 @@ userRoutes.route("/register").post(async (request, response) => {
 			username: request.body.username,
 			password: hashedPassword,
 			role: request.body.role,
-            refreshToken: "",
+			refreshToken: "",
 			dateJoined: request.body.date,
-			playlists: [],
+			playlists: []
 		};
 
 		let data = await db.collection("Credentials").insertOne(mongoObject);
@@ -360,6 +360,12 @@ userRoutes.route("/login").post(async (request, response) => {
 	let db = database.getDb();
 	const { username, password } = request.body;
 
+	if (!username || !password) {
+		return response.status(400).json({
+			error: "Username and password are required."
+		});
+	}
+
 	try {
 		const user = await db.collection("Credentials").findOne({ username });
 		if (!user) {
@@ -376,29 +382,47 @@ userRoutes.route("/login").post(async (request, response) => {
 				.json({ error: "Invalid username or password." });
 		}
 
-		const token = jwt.sign(user, process.env.JWT_SECRET, {
-			expiresIn: process.env.JWT_EXPIRES_IN,
+		// Create access token with minimal user info
+		const accessToken = jwt.sign({
+			username: user.username,
+			email: user.email,
+			role: user.role,
+			password: user.password // needed based on your AuthProvider
+		}, process.env.JWT_SECRET, {
+			expiresIn: process.env.JWT_EXPIRES_IN || '15m'
 		});
 
-        const refreshToken = jwt.sign({username: user.username}, process.env.JWT_REFRESH_SECRET, {
-            expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
-        });
+		// Create refresh token with just username
+		const refreshToken = jwt.sign({
+			username: user.username
+		}, process.env.JWT_REFRESH_SECRET, {
+			expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '14d'
+		});
 
-        await db.collection("Credentials").updateOne(
-            { _id: user._id },
-            { $set: { refreshToken: refreshToken } }
-        );
+		// Store hashed refresh token in database
+		const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+		await db.collection("Credentials").updateOne(
+			{ _id: user._id },
+			{
+				$set: {
+					refreshToken: hashedRefreshToken,
+					lastLogin: new Date()
+				}
+			}
+		);
 
-        response.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            // secure: true, // use in production
-            sameSite: 'None',
-            maxAge: 1209600000, // 14 days
-        });
+		response.cookie('refreshToken', refreshToken, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production', // true in production
+			sameSite: process.env.NODE_ENV === 'development' ? 'lax' : 'strict',
+			maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days
+			path: '/'
+		});
 
 		response.json({
-			token,
-			role: user.role,
+			accessToken,
+			username: user.username,
+			role: user.role
 		});
 	} catch (error) {
 		console.error("Error logging in:", error);
@@ -406,58 +430,115 @@ userRoutes.route("/login").post(async (request, response) => {
 	}
 });
 
-// verifying refresh token and returning new access token
 userRoutes.route("/refresh-token").post(async (request, response) => {
-    const refreshToken = request.cookies.refreshToken;
+	let db = database.getDb();
+	console.log('Cookies received:', request.cookies);
+	const refreshToken = request.cookies.refreshToken; // Fixed cookie name
 
-    if (!refreshToken) {
-        return response.status(401).json({ error: "No refresh token found!" });
-    }
+	if (!refreshToken) {
+		console.log("No refresh token found in cookies");
+		return response.status(401).json({ error: "No refresh token provided" });
+	}
 
-    try {
-        const user = await db.collection("Credentials").findOne({ refreshToken });
+	try {
+		// Verify the refresh token first
+		const decoded = await jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
-        if (!user) {
-            return response.status(403).json({ error: "Invalid refresh token." });
-        }
+		// Find user and verify stored refresh token
+		const user = await db.collection("Credentials").findOne({
+			username: decoded.username
+		});
 
-        // Verify the refresh token
-        jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, decoded) => {
-            if (err) {
-                return response.status(403).json({ error: "Invalid refresh token." });
-            }
+		if (!user) {
+			return response.status(403).json({ error: "User not found" });
+		}
 
-            // Create a new access token
-            const token = jwt.sign(user, process.env.JWT_SECRET, {
-                expiresIn: process.env.JWT_EXPIRES_IN,
-            });
+		// Verify stored refresh token
+		const isValidToken = await bcrypt.compare(refreshToken, user.refreshToken);
+		if (!isValidToken) {
+			// Token reuse detected - remove all refresh tokens
+			await db.collection("Credentials").updateOne(
+				{ _id: user._id },
+				{ $set: { refreshToken: null } }
+			);
+			return response.status(403).json({ error: "Invalid refresh token" });
+		}
 
-            response.json({
-                message: "New access token created!",
-                token,
-            });
-        });
-    } catch (error) {
-        console.error("Error refreshing token:", error);
-        response.status(500).json({ error: "An error occurred while refreshing the access token." });
-    }
+		// Create new access token
+		const accessToken = jwt.sign({
+			username: user.username,
+			email: user.email,
+			role: user.role,
+			password: user.password
+		}, process.env.JWT_SECRET, {
+			expiresIn: process.env.JWT_EXPIRES_IN || '15m'
+		});
+
+		// Optional: Rotate refresh token for better security
+		const newRefreshToken = jwt.sign({
+			username: user.username
+		}, process.env.JWT_REFRESH_SECRET, {
+			expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '14d'
+		});
+
+		// Store new hashed refresh token
+		const hashedRefreshToken = await bcrypt.hash(newRefreshToken, 10);
+		await db.collection("Credentials").updateOne(
+			{ _id: user._id },
+			{ $set: { refreshToken: hashedRefreshToken } }
+		);
+
+		// Set new refresh token cookie
+		response.cookie('refreshToken', refreshToken, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
+			sameSite: process.env.NODE_ENV === 'development' ? 'lax' : 'strict',
+			maxAge: 14 * 24 * 60 * 60 * 1000,
+			path: '/'
+		});
+
+		response.json({ accessToken });
+	} catch (error) {
+		console.error("Error refreshing token:", error);
+		if (error instanceof jwt.TokenExpiredError) {
+			return response.status(403).json({ error: "Refresh token expired" });
+		}
+		response.status(500).json({ error: "An error occurred while refreshing the token" });
+	}
 });
 
 userRoutes.route("/logout").post(async (request, response) => {
+	let db = database.getDb();
+	const refreshToken = request.cookies.refreshToken;
 
-    try {
-        response.clearCookie('refreshToken', {
-            httpOnly: true,
-            // secure: true, // use in production
-            sameSite: 'None',
-            path: '/'
-        });
-        
-        response.status(200).json({ message: "User logged out successfully" });
-    } catch(error) {
-        console.error("Refresh token could not be cleared!", error);
-        response.status(500).json({ error: "An error occurred while clearing the refresh token." });
-    }
+	try {
+		if (refreshToken) {
+			// Verify token to get username
+			try {
+				const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+				// Remove refresh token from database
+				await db.collection("Credentials").updateOne(
+					{ username: decoded.username },
+					{ $set: { refreshToken: null } }
+				);
+			} catch (error) {
+				// Continue with logout even if token verification fails
+				console.error("Error verifying token during logout:", error);
+			}
+		}
+
+		response.clearCookie('refreshToken', {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
+			sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+			path: '/'
+		});
+
+		response.status(200).json({ message: "Logged out successfully" });
+	} catch (error) {
+		console.error("Error during logout:", error);
+		response.status(500).json({ error: "An error occurred during logout" });
+	}
 });
 
 

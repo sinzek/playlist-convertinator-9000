@@ -49,7 +49,7 @@
 	@apply bg-base-100 bg-opacity-60 backdrop-blur-2xl ring-1 ring-primary/10;
 }
 .card-s-bg {
-	@apply bg-base-100 ring-1 ring-secondary/10 bg-opacity-60 p-5 shadow-xl;
+	@apply bg-base-100 ring-1 ring-secondary/10 bg-opacity-60 p-5 shadow-xl lg:px-[5rem];
 }
 
 #navbar-links a.active,

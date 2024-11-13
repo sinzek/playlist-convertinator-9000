@@ -49,7 +49,7 @@ export default function Login() {
             const response = await instance.post("/login", {
                 username: user,
                 password: pwd,
-            });
+            }, { withCredentials: true });
 			setAuth(prev => ({ 
                 ...prev, 
                 loading: false 

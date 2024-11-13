@@ -12,135 +12,156 @@ export const AuthProvider = ({ children }) => {
         pwdHash: "",
         role: "", 
         loading: true,
+        error: null,
         connectedAccounts: false
     });
+
+    const clearAuth = () => {
+        setAuth({
+            isAuthenticated: false,
+            token: null,
+            email: "",
+            user: "",
+            pwdHash: "",
+            role: "",
+            loading: false,
+            error: null,
+            connectedAccounts: false
+        });
+        localStorage.removeItem("accessToken");
+    };
 
     const refreshAccessToken = async () => {
         try {
             const response = await instance.post("/refresh-token", {}, {
-                withCredentials: true // needed for cookies to be included
+                withCredentials: true
             });
 
             const { accessToken } = response.data;
             
-            // Store only the access token in localStorage
+            if (!accessToken) {
+                throw new Error('No access token received');
+            }
+
             localStorage.setItem("accessToken", accessToken);
-            
-            // Verify and set the new access token
             await verifyToken(accessToken);
             
             return accessToken;
         } catch (error) {
             console.error("Failed to refresh token:", error);
-            logout();
+            clearAuth();
             throw error;
         }
     };
 
     const logout = async () => {
         try {
-            // Call logout endpoint to clear the refresh token cookie
             await instance.post("/logout", {}, {
                 withCredentials: true
             });
         } catch (error) {
             console.error("Logout failed:", error);
         } finally {
-            setAuth({
-                isAuthenticated: false,
-                token: null,
-                email: "",
-                user: "",
-                pwdHash: "",
-                role: "",
-                loading: false,
-                connectedAccounts: false
-            });
-            localStorage.removeItem("accessToken");
+            clearAuth();
         }
     };
 
     const verifyToken = async (token) => {
-        if (token) {
-            try {
-                const decodedToken = jwtDecode(token);
-                const isExpired = Date.now() >= decodedToken.exp * 1000;
-
-                if (!isExpired) {
-                    setAuth({
-                        isAuthenticated: true,
-                        token: token,
-                        email: decodedToken.email,
-                        user: decodedToken.username,
-                        pwdHash: decodedToken.password,
-                        role: decodedToken.role,
-                        loading: false
-                    });
-
-                    // set up refresh timer to 1 minute before token expires
-                    const timeUntilRefresh = (decodedToken.exp * 1000 - Date.now()) - 60000; // Refresh 1 minute before expiry
-                    setTimeout(refreshAccessToken, timeUntilRefresh);
-                } else {
-                    // token expired, try refresh
-                    try {
-                        await refreshAccessToken();
-                    } catch (error) {
-                        logout();
-                    }
-                }
-            } catch (error) {
-                console.error("Failed to decode token:", error);
-                logout();
-            }
-        } else {
-            // no access token in localstorage, try refresh if cookie exists
+        if (!token) {
             try {
                 await refreshAccessToken();
+                return;
             } catch (error) {
                 setAuth(prev => ({
                     ...prev,
                     isAuthenticated: false,
-                    loading: false
+                    loading: false,
+                    error: 'No valid authentication found'
                 }));
+                return;
             }
+        }
+
+        try {
+            const decodedToken = jwtDecode(token);
+            const currentTime = Date.now() / 1000; // Convert to seconds
+            
+            if (decodedToken.exp <= currentTime) {
+                // Token is expired
+                await refreshAccessToken();
+                return;
+            }
+
+            setAuth({
+                isAuthenticated: true,
+                token: token,
+                email: decodedToken.email,
+                user: decodedToken.username,
+                pwdHash: decodedToken.password,
+                role: decodedToken.role,
+                loading: false,
+                error: null
+            });
+
+            // Set up refresh timer
+            const timeUntilRefresh = (decodedToken.exp * 1000 - Date.now()) - 60000;
+            const refreshTimer = setTimeout(() => {
+                refreshAccessToken().catch(console.error);
+            }, Math.max(0, timeUntilRefresh)); // Ensure non-negative timeout
+
+            return () => clearTimeout(refreshTimer);
+        } catch (error) {
+            console.error("Token verification failed:", error);
+            clearAuth();
+            setAuth(prev => ({
+                ...prev,
+                error: 'Invalid token format'
+            }));
         }
     };
 
     useEffect(() => {
-
         const interceptor = instance.interceptors.response.use(
             (response) => response,
             async (error) => {
                 const originalRequest = error.config;
-
-                // If error is 401 and we haven't tried refreshing yet
-                if (error.response?.status === 401 && !originalRequest._retry) {
+    
+                // Check if error is 401 and we haven't tried refreshing yet
+                // AND the failed request isn't the refresh token endpoint itself
+                if (error.response?.status === 401 && 
+                    !originalRequest._retry &&
+                    !originalRequest.url.includes('refresh-token')) {
                     originalRequest._retry = true;
-
+    
                     try {
                         const newToken = await refreshAccessToken();
                         originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
                         return instance(originalRequest);
                     } catch (refreshError) {
+                        clearAuth();
                         return Promise.reject(refreshError);
                     }
                 }
-
+    
                 return Promise.reject(error);
             }
         );
-
+    
         return () => {
             instance.interceptors.response.eject(interceptor);
         };
     }, []);
 
     useEffect(() => {
-        // Check initial token
+        let cleanup;
         const token = localStorage.getItem("accessToken");
-        verifyToken(token);
+        
+        const initAuth = async () => {
+            cleanup = await verifyToken(token);
+        };
 
-        // Set up storage event listener
+        initAuth();
+
         const handleStorageChange = (e) => {
             if (e.key === "accessToken") {
                 if (!e.newValue) {
@@ -152,7 +173,11 @@ export const AuthProvider = ({ children }) => {
         };
 
         window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
+        
+        return () => {
+            if (cleanup) cleanup();
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, []);
 
     const contextValue = {
@@ -164,13 +189,8 @@ export const AuthProvider = ({ children }) => {
     };
 
     if (auth.loading) {
-        return (
-            <>
-                <div className="skeleton h-full w-full"></div>
-            </>
-        );
+        return <div className="skeleton h-full w-full"></div>;
     }
-
 
     return (
         <AuthContext.Provider value={contextValue}>

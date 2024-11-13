@@ -118,7 +118,7 @@ export default function Register() {
             const response = await instance.post("/login", {
                 username: user,
                 password: pwd
-            });
+            }, { withCredentials: true });
             
             const accessToken = response?.data?.token;
             localStorage.setItem("accessToken", accessToken);
