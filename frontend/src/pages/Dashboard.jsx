@@ -15,21 +15,15 @@ export default function Dashboard() {
 		if (!auth.isAuthenticated) {
 			navigate(-1);
 		}
-	}, [])
 
-	const verifySpotifyConnection = async () => {
-		try {
-			const response = await instance.get(`/users?username=${auth.user}`);
-			console.log("SPOTIFY CONNECTION FOUND");
-			if(response.data.spotifyConnected) {
-				setSpotifyConnected(true);
-			} else {
-				setSpotifyConnected(false);
-			}
-		} catch(error) {
-			console.error("Could not retrieve user:", error);
+		if (auth.spotifyConnected && auth.YTMusicConnected) {
+			setConnectedAccounts(true);
+		} else if (auth.spotifyConnected) {
+			setSpotifyConnected(true);
+		} else if (auth.YTMusicConnected) {
+			setYTMusicConnected(true);
 		}
-	};
+	}, [])
 
 	const handleSpotifyConnect = async () => {
 		try {
@@ -47,9 +41,13 @@ export default function Dashboard() {
 
 	const handleSpotifyDisconnect = async () => {
 		try {
-			const response = await instance.get("/api/spotify/disconnect", { params: { username: auth.user }, withCredentials: true });
-			console.log(response.message);
-			
+			await instance.post(`/api/spotify/disconnect`, { params: { username: auth.user }, withCredentials: true });
+			setAuth(prev => ({
+                ...prev,
+                spotifyConnected: false,
+            }));
+			setSpotifyConnected(false);
+
 		} catch (error) {
 			console.log("Error disconnecting Spotify account:", error);
 			return;
@@ -57,26 +55,6 @@ export default function Dashboard() {
 
 	};
 
-	
-
-
-
-	useEffect(() => {
-
-
-		const params = new Proxy(new URLSearchParams(window.location.search), {
-			get: (searchParams, prop) => searchParams.get(prop)
-		})
-		if (params.spotify === "connected") {
-			console.log("SPOTIFY CONNECTED YAY!");
-		} else if (params.error === "invalid_state") {
-			console.log("ERROR: INVALID STATE");
-		} else if (params.error === "user_not_found") {
-			console.log("ERROR: USER NOT FOUND");
-		} else if (params.error === "spotify_auth_failed") {
-			console.log("ERROR: SPOTIFY AUTH FAILED");
-		}
-	}, [window.location])
 
 	return (
 		<>
@@ -114,7 +92,7 @@ export default function Dashboard() {
 							</svg>
 							Connect to Spotify
 						</button>
-						<button className="btn btn-error font-bold" disabled={YTMusicConnected ? true : false}>
+						<button className="btn btn-success font-bold" disabled={YTMusicConnected ? true : false}>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								className={`h-6 w-6 shrink-0 stroke-current ${spotifyConnected ? '' : 'hidden'}`}
@@ -149,9 +127,37 @@ export default function Dashboard() {
 						<h3 className="mb-2 flex gap-4">
 							Username: <b>{auth?.user}</b>
 						</h3>
-						<h3 className="mb-2 flex gap-4">
+						<h3 className="mb-[5rem] flex gap-4">
 							Email: <b>{auth?.email}</b>
 						</h3>
+						<button className="btn btn-error btn-sm font-bold mb-3" disabled={spotifyConnected ? false : true} onClick={handleSpotifyDisconnect}>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								className="h-6 w-6 shrink-0 stroke-current"
+								fill="none"
+								viewBox="0 0 24 24">
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth="2"
+									d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+							</svg>
+							Disconnect Spotify Account
+						</button>
+						<button className="btn btn-error btn-sm font-bold" disabled={YTMusicConnected ? false : true}>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								className="h-6 w-6 shrink-0 stroke-current"
+								fill="none"
+								viewBox="0 0 24 24">
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth="2"
+									d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+							</svg>
+							Disconnect YouTube Music Account
+						</button>
 					</div>
 				</div>
 				<div className="card card-s-bg lg:w-1/2 mx-5 lg:ml-2.5 lg:mr-[20%] mb-5 items-center text-left animate-fade lg:animate-fade-left animate-once">

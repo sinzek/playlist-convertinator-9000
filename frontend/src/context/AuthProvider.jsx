@@ -13,7 +13,8 @@ export const AuthProvider = ({ children }) => {
         role: "", 
         loading: true,
         error: null,
-        connectedAccounts: false
+        spotifyConnected: false,
+        YTMusicConnected: false
     });
 
     const clearAuth = () => {
@@ -26,10 +27,33 @@ export const AuthProvider = ({ children }) => {
             role: "",
             loading: false,
             error: null,
-            connectedAccounts: false
+            spotifyConnected: false,
+            YTMusicConnected: false
         });
         localStorage.removeItem("accessToken");
     };
+
+    const verifyConnectedAccounts = async (username) => {
+        try {
+            const response = await instance.get(`/users?username=${username}`);
+            setAuth(prev => ({
+                ...prev,
+                spotifyConnected: response.data.spotifyConnected,
+                YTMusicConnected: response.data.YTMusicConnected
+            }));
+            return [ response.data.spotifyConnected, response.data.YTMusicConnected ];
+
+            
+        } catch(error) {
+            setAuth(prev => ({
+                ...prev,
+                isAuthenticated: false,
+                loading: false,
+                error: 'No user found'
+            }));
+            return false;
+        }
+    }
 
     const refreshAccessToken = async () => {
         try {
@@ -92,6 +116,8 @@ export const AuthProvider = ({ children }) => {
                 return;
             }
 
+            const connectedAccts = await verifyConnectedAccounts(decodedToken.username);
+
             setAuth({
                 isAuthenticated: true,
                 token: token,
@@ -100,7 +126,9 @@ export const AuthProvider = ({ children }) => {
                 pwdHash: decodedToken.password,
                 role: decodedToken.role,
                 loading: false,
-                error: null
+                error: null,
+                spotifyConnected: connectedAccts[0],
+                YTMusicConnected: connectedAccts[1]
             });
 
             // Set up refresh timer
@@ -185,7 +213,8 @@ export const AuthProvider = ({ children }) => {
         setAuth,
         logout,
         verifyToken,
-        refreshAccessToken
+        refreshAccessToken,
+        verifyConnectedAccounts,
     };
 
     if (auth.loading) {

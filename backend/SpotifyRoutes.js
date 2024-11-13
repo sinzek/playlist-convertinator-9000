@@ -186,19 +186,17 @@ spotifyRoutes.route("/disconnect").post(async (request, response) => {
     let db = database.getDb();
 
     try {
-        const username = request.query.username;
+        const username = request.body.params.username;
 
         await db.collection("Credentials").updateOne(
             { username: username },
             {
-                $unset: {
+                $set: {
                     spotifyAccessToken: "",
                     spotifyRefreshToken: "",
                     spotifyTokenExpires: "",
                     spotifyId: "",
-                    spotifyAPIState: ""
-                },
-                $set: {
+                    spotifyAPIState: "",
                     spotifyConnected: false
                 }
             }
