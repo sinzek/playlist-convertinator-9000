@@ -157,8 +157,8 @@ const Admin = () => {
 	return (
 		<>
 			<div className="flex flex-col w-full">
-				<div className="card card-bg rounded-box flex-grow mx-5 lg:mx-[20%] mb-5 p-5 justify-center items-center text-left shadow-lg animate-fade animate-once">
-					<h3 className="text-xl font-italic mb-5">User Management</h3>
+				<div className="card lg:mx-[20%] mb-5 p-5 justify-center items-center text-left animate-fade animate-once">
+					<h3 className="text-2xl font-italic mb-5">User Management</h3>
 					<div className="flex flex-col w-full lg:flex-row mb-3 items-center">
 						<div className="stats shadow-md flex flex-1 bg-base-200 w-full">
 							<div className="stat lg:flex-row items-center justify-items-stretch w-full">
@@ -167,7 +167,7 @@ const Admin = () => {
 										xmlns="http://www.w3.org/2000/svg"
 										fill="none"
 										viewBox="0 0 24 24"
-										className="inline-block h-8 w-8 stroke-current"
+										className="hidden lg:inline-block h-8 w-8 stroke-current"
 									>
 										<path
 											strokeLinecap="round"
@@ -186,7 +186,7 @@ const Admin = () => {
 										xmlns="http://www.w3.org/2000/svg"
 										fill="none"
 										viewBox="0 0 24 24"
-										className="inline-block h-8 w-8 stroke-current"
+										className="hidden lg:inline-block h-8 w-8 stroke-current"
 									>
 										<path
 											strokeLinecap="round"
@@ -211,8 +211,8 @@ const Admin = () => {
 						</div>
 					</div>
 
-					<div className="card card-bg rounded-box w-full overflow-hidden shadow-md">
-						<div className="flex font-semibold bg-base-200 border-b border-base-300">
+					<div className="card bg-base-100 rounded-box w-full overflow-hidden shadow-md text-xs">
+						<div className="flex font-semibold bg-base-200 border-b border-base-300 items-center">
 							<div
 								className="flex-1 p-4 cursor-pointer hover:bg-base-300"
 								onClick={() => handleSort("username")}
@@ -253,7 +253,7 @@ const Admin = () => {
 							height={400}
 							width="100%"
 							itemCount={sortedUsers.length}
-							itemSize={56}
+							itemSize={70}
 						>
 							{Row}
 						</FixedSizeList>

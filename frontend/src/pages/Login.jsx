@@ -79,7 +79,7 @@ export default function Login() {
 
 	return (
 		<>
-			<div className="flex flex-col items-center mx-5">
+			<div className="flex flex-col items-center mx-5 ">
 				<div role="tablist" className="tabs tabs-lifted px-10" id="tab-list">
 					<a
 						role="tab"

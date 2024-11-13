@@ -389,7 +389,7 @@ userRoutes.route("/login").post(async (request, response) => {
             { $set: { refreshToken: refreshToken } }
         );
 
-        response.cookie('jwt', refreshToken, {
+        response.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             // secure: true, // use in production
             sameSite: 'None',
@@ -408,10 +408,10 @@ userRoutes.route("/login").post(async (request, response) => {
 
 // verifying refresh token and returning new access token
 userRoutes.route("/refresh-token").post(async (request, response) => {
-    const { refreshToken } = request.body;
+    const refreshToken = request.cookies.refreshToken;
 
     if (!refreshToken) {
-        return response.status(401).json({ error: "Refresh token is required." });
+        return response.status(401).json({ error: "No refresh token found!" });
     }
 
     try {
@@ -439,7 +439,24 @@ userRoutes.route("/refresh-token").post(async (request, response) => {
         });
     } catch (error) {
         console.error("Error refreshing token:", error);
-        response.status(500).json({ error: "An error occurred while refreshing the token." });
+        response.status(500).json({ error: "An error occurred while refreshing the access token." });
+    }
+});
+
+userRoutes.route("/logout").post(async (request, response) => {
+
+    try {
+        response.clearCookie('refreshToken', {
+            httpOnly: true,
+            // secure: true, // use in production
+            sameSite: 'None',
+            path: '/'
+        });
+        
+        response.status(200).json({ message: "User logged out successfully" });
+    } catch(error) {
+        console.error("Refresh token could not be cleared!", error);
+        response.status(500).json({ error: "An error occurred while clearing the refresh token." });
     }
 });
 

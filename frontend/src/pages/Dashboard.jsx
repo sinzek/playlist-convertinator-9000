@@ -9,7 +9,7 @@ export default function Dashboard() {
 	return (
 		<>
 			<div className="flex w-full items-center justify-center">
-				<div className="card p-5 bg-info gap-2 flex flex-row mb-5 items-center shadow-lg mx-5 text-lg text-info-content animate-jump-in animate-once animate-ease-in-out">
+				<div className="card p-5 bg-info gap-2 flex flex-row mb-5 items-center shadow-lg mx-5 text-lg text-info-content animate-fade-down animate-once animate-ease-in-out">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
@@ -31,7 +31,7 @@ export default function Dashboard() {
 			</div>
 
 			<div className="flex flex-col lg:flex-row">
-				<div className="card card-bg rounded-box flex-grow mx-5 lg:w-1/2 lg:mr-2.5 lg:ml-[20%] mb-5 p-5 justify-center items-center text-left shadow-lg animate-fade lg:animate-fade-right animate-once">
+				<div className="card card-bg mx-5 lg:w-1/2 lg:mr-2.5 lg:ml-[20%] mb-5 items-center text-left animate-fade lg:animate-fade-right animate-once">
 					<h2 className="flex flex-row items-center gap-2 text-3xl font-bold text-primary mb-4">
 						<svg
 							viewBox="0 0 448 512"
@@ -51,7 +51,7 @@ export default function Dashboard() {
 						</h3>
 					</div>
 				</div>
-				<div className="card card-bg rounded-box flex-grow lg:w-1/2 mx-5 lg:ml-2.5 lg:mr-[20%] mb-5 p-5 justify-center items-center text-left shadow-lg animate-fade lg:animate-fade-left animate-once">
+				<div className="card card-bg lg:w-1/2 mx-5 lg:ml-2.5 lg:mr-[20%] mb-5 items-center text-left animate-fade lg:animate-fade-left animate-once">
 					<h2 className="flex flex-row items-center gap-2 text-3xl font-bold text-secondary mb-4">
 						<svg
 							viewBox="0 0 700 1000"

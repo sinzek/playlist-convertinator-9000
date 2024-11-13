@@ -52,7 +52,7 @@ export default function Navbar() {
 		if (background) {
 			background.style.setProperty(
 				"--background-brightness",
-				islight ? "100%" : "15%"
+				islight ? "100%" : "20%"
 			);
 		}
 	}, [islight]);
@@ -212,7 +212,7 @@ export default function Navbar() {
 				<div className="flex flex-1 lg:hidden header-bg rounded-box items-center justify-center mr-2 lg:mr-2 ml-2  px-4 shadow-lg">
 					<NavLink
 						to="/"
-						className="btn btn-ghost text-primary text-xl text-center"
+						className="btn btn-ghost text-xl text-center"
 					>
 						Playlist Convertinator
 					</NavLink>

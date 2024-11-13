@@ -65,7 +65,7 @@ export const router = createBrowserRouter([
 
 function MainApp() {
 	return (
-		<>
+		<>  
 			<Navbar />
 			<Outlet />
 		</>
