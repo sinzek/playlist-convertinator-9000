@@ -15,7 +15,8 @@
 - Express.js
 - MongoDB
 - axios
+- [muse](https://github.com/vixalien/muse) (YT Music API workaround)
 - etc.
 
-`npm run dev` for frontend development server\
+`npm run dev` for frontend development server
 `node server.js` for backend server

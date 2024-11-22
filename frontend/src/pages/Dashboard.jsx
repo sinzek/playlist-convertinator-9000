@@ -6,8 +6,12 @@ import { useNavigate } from "react-router-dom";
 export default function Dashboard() {
 	const { auth, setAuth } = useAuth();
 	const [spotifyConnected, setSpotifyConnected] = useState(false);
-	const [YTMusicConnected, setYTMusicConnected] = useState(false);
+	const [ytMusicConnected, setYTmusicConnected] = useState(false);
 	const [connectedAccounts, setConnectedAccounts] = useState(false);
+	const [showYTmusicConnectWindow, setShowYTmusicConnectWindow] = useState(false);
+	const [copiedToClipboard, setCopiedToClipboard] = useState(false);
+	const [curYTuserCode, setCurYTuserCode] = useState("");
+	const [curYTurl, setCurYTurl] = useState("");
 
 	const navigate = useNavigate();
 
@@ -16,12 +20,12 @@ export default function Dashboard() {
 			navigate(-1);
 		}
 
-		if (auth.spotifyConnected && auth.YTMusicConnected) {
+		if (auth.spotifyConnected && auth.ytMusicConnected) {
 			setConnectedAccounts(true);
 		} else if (auth.spotifyConnected) {
 			setSpotifyConnected(true);
-		} else if (auth.YTMusicConnected) {
-			setYTMusicConnected(true);
+		} else if (auth.ytMusicConnected) {
+			setYTmusicConnected(true);
 		}
 	}, [])
 
@@ -39,13 +43,50 @@ export default function Dashboard() {
 
 	};
 
+	const handleYTmusicConnect = async () => {
+		console.log("made it here");
+		try {
+			const response = await instance.get("/api/ytMusic/connect", {
+				params: { username: auth.user }
+			});
+
+			const { verification_url, user_code } = response.data;
+			setCurYTuserCode(user_code);
+			setCurYTurl(verification_url);
+
+		} catch (error) {
+			console.error('Authentication failed at route connect:', error);
+		}
+		return;
+	}
+
+	const copyCodeToClipboard = () => {
+
+	}
+
+	const confirmEnteredYTCode = async () => {
+		try {
+			const callbackResponse = await instance.post('/api/ytMusic/callback', {
+				username: auth.user,
+				loginCode: curYTuserCode
+			});
+
+			if (callbackResponse.data.success) {
+				console.log('Successfully authenticated with YT Music!');
+				location.reload();
+			}
+		} catch (error) {
+			console.error('Authentication failed at route callback', error);
+		}
+	}
+
 	const handleSpotifyDisconnect = async () => {
 		try {
 			await instance.post(`/api/spotify/disconnect`, { params: { username: auth.user }, withCredentials: true });
 			setAuth(prev => ({
-                ...prev,
-                spotifyConnected: false,
-            }));
+				...prev,
+				spotifyConnected: false,
+			}));
 			setSpotifyConnected(false);
 
 		} catch (error) {
@@ -77,7 +118,7 @@ export default function Dashboard() {
 						New here? Click the buttons to connect your Spotify and
 						YouTube Music accounts!
 					</span>
-					<div className="flex flex-col lg:flex-row mt-2 lg:mt-0 lg:ml-5 gap-5">
+					<div className="flex flex-col md:flex-row lg:flex-row mt-2 lg:mt-0 lg:ml-5 gap-5">
 						<button className="btn btn-success font-bold" disabled={spotifyConnected ? true : false} onClick={handleSpotifyConnect}>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -92,10 +133,10 @@ export default function Dashboard() {
 							</svg>
 							Connect to Spotify
 						</button>
-						<button className="btn btn-success font-bold" disabled={YTMusicConnected ? true : false}>
+						<button className="btn btn-success font-bold" disabled={ytMusicConnected ? true : false} onClick={async () => {setShowYTmusicConnectWindow(true); await handleYTmusicConnect()}}>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
-								className={`h-6 w-6 shrink-0 stroke-current ${spotifyConnected ? '' : 'hidden'}`}
+								className={`h-6 w-6 shrink-0 stroke-current ${ytMusicConnected ? '' : 'hidden'}`}
 								fill="none"
 								viewBox="0 0 24 24">
 								<path
@@ -144,7 +185,7 @@ export default function Dashboard() {
 							</svg>
 							Disconnect Spotify Account
 						</button>
-						<button className="btn btn-error btn-sm font-bold" disabled={YTMusicConnected ? false : true}>
+						<button className="btn btn-error btn-sm font-bold" disabled={ytMusicConnected ? false : true}>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								className="h-6 w-6 shrink-0 stroke-current"
@@ -173,6 +214,46 @@ export default function Dashboard() {
 					</h2>
 				</div>
 			</div>
+			{showYTmusicConnectWindow && (
+				<Overlay onClose={() => setShowYTmusicConnectWindow(false)}>
+					<div className="flex flex-col justify-center w-full items-center mb-4">
+						<h2 className="text-2xl font-bold mb-8">Connect to YouTube Music</h2>
+						<p className="text-xl font-medium mb-4">Step 1: Copy your login code</p>
+						<div className="flex flex-row items-center gap-2 mb-4">
+							<input type="text" className="input input-bordered input-sm w-auto text-center" value={curYTuserCode} readOnly={true} />
+							<button className="btn btn-xs w-[2rem] h-[2rem] p-0" onClick={() => copyCodeToClipboard}>
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" className="w-5 h-5 fill-current">
+									<path fillRule="evenodd" d="M4 2a2 2 0 00-2 2v9a2 2 0 002 2h2v2a2 2 0 002 2h9a2 2 0 002-2V8a2 2 0 00-2-2h-2V4a2 2 0 00-2-2H4zm9 4V4H4v9h2V8a2 2 0 012-2h5zM8 8h9v9H8V8z" />
+								</svg>
+							</button>
+							<p className={copiedToClipboard ? "text-xs text-success" : "hidden"}>Copied to clipboard!</p>
+
+						</div>
+						<p className="text-xl font-medium mb-4">Step 2: Follow this link to authenticate with YouTube</p>
+						<a href={curYTurl} className="text-sm text-primary mb-4">{curYTurl}</a>
+						<p className="text-xl font-medium mb-4">Step 3: Click confirm when finished</p>
+						<button className="btn btn-md btn-success" onClick={async () => {await confirmEnteredYTCode()}}>Confirm</button>
+
+
+					</div>
+				</Overlay>
+			)}
 		</>
 	);
-}
+};
+
+const Overlay = ({ children, onClose }) => {
+	return (
+		<div
+			className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+			onClick={onClose}
+		>
+			<div
+				className="bg-base-100 rounded-lg p-6 shadow-xl"
+				onClick={(e) => e.stopPropagation()} // Prevents closing when clicking inside
+			>
+				{children}
+			</div>
+		</div>
+	);
+};

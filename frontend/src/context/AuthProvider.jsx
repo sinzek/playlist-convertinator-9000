@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
         loading: true,
         error: null,
         spotifyConnected: false,
-        YTMusicConnected: false
+        ytMusicConnected: false
     });
 
     const clearAuth = () => {
@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
             loading: false,
             error: null,
             spotifyConnected: false,
-            YTMusicConnected: false
+            ytMusicConnected: false
         });
         localStorage.removeItem("accessToken");
     };
@@ -39,9 +39,9 @@ export const AuthProvider = ({ children }) => {
             setAuth(prev => ({
                 ...prev,
                 spotifyConnected: response.data.spotifyConnected,
-                YTMusicConnected: response.data.YTMusicConnected
+                ytMusicConnected: response.data.ytMusicConnected
             }));
-            return [ response.data.spotifyConnected, response.data.YTMusicConnected ];
+            return [ response.data.spotifyConnected, response.data.ytMusicConnected ];
 
             
         } catch(error) {
@@ -128,7 +128,7 @@ export const AuthProvider = ({ children }) => {
                 loading: false,
                 error: null,
                 spotifyConnected: connectedAccts[0],
-                YTMusicConnected: connectedAccts[1]
+                ytMusicConnected: connectedAccts[1]
             });
 
             // Set up refresh timer

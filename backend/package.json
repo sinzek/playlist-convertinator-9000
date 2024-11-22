@@ -7,6 +7,7 @@
 		"dotenv": "^16.4.5",
 		"express": "^4.21.1",
 		"jsonwebtoken": "^9.0.2",
+		"libmuse": "^0.1.1",
 		"mongodb": "^6.10.0",
 		"node": "^22.11.0",
 		"querystring": "^0.2.1"

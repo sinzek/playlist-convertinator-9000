@@ -26,6 +26,8 @@
 	font-family: Poppins;
 	-webkit-filter: brightness(var(--background-brightness));
 	-webkit-transition: -webkit-filter 300ms ease;
+	filter: brightness(var(--background-brightness));
+	transition: 300ms ease;
 	box-shadow: 0 0 30px rgba(0, 0, 0, 0.6) inset;
 	z-index: -1;
 }

@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const users = require("./userRoutes");
 const spotify = require("./SpotifyRoutes");
+const ytMusic = require("./YTMusicRoutes");
 const cookieParser = require("cookie-parser");
 
 const whitelist = ["http://localhost:5173", "http://localhost:3000", ""]; // eventually add domain here
@@ -21,7 +22,6 @@ app.use(
 			
 			// Allow Chrome extensions and whitelisted domains
 			if (origin.startsWith('chrome-extension://') || whitelist.includes(origin)) {
-				console.log('Origin allowed:', origin);
 				callback(null, true);
 			} else {
 				console.log('Origin blocked:', origin);
@@ -36,6 +36,7 @@ app.use(
 );
 app.use(users);
 app.use('/api/spotify', spotify);
+app.use('/api/ytMusic', ytMusic);
 
 app.listen(PORT, () => {
 	connect.connectToServer();

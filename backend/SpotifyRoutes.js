@@ -15,7 +15,7 @@ const SCOPES = [
 
 const SPOTIFY_AUTH_URL = 'https://accounts.spotify.com/authorize';
 const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
-const SPOTIFY_API_URL = 'https://api.spotify.com/v1'
+const SPOTIFY_API_URL = 'https://api.spotify.com/v1';
 
 spotifyRoutes.route("/connect").get(async (request, response) => {
     let db = database.getDb();
@@ -64,7 +64,7 @@ spotifyRoutes.route("/callback").get(async (request, response) => {
     try {
         const [originalState, username] = state.split(':');
 
-        if(!username) {
+        if (!username) {
             return response.redirect(`${process.env.FRONTEND_URL}/dashboard?error=invalid_state`);
         }
 
