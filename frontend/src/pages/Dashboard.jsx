@@ -16,6 +16,9 @@ export default function Dashboard() {
 	const navigate = useNavigate();
 
 	useEffect(() => {
+		setCopiedToClipboard(false);
+		setShowYTmusicConnectWindow(false);
+
 		if (!auth.isAuthenticated) {
 			navigate(-1);
 		}
@@ -44,39 +47,47 @@ export default function Dashboard() {
 	};
 
 	const handleYTmusicConnect = async () => {
-		console.log("made it here");
 		try {
-			const response = await instance.get("/api/ytMusic/connect", {
-				params: { username: auth.user }
+			const response = await instance.post("/api/ytMusic/auth", {
+				username: auth.user
 			});
 
-			const { verification_url, user_code } = response.data;
-			setCurYTuserCode(user_code);
+			const { verification_url, userCode } = response.data;
+			setCurYTuserCode(userCode);
 			setCurYTurl(verification_url);
 
 		} catch (error) {
-			console.error('Authentication failed at route connect:', error);
+			console.error('YT Authentication failed at connect:', error);
 		}
 		return;
 	}
 
-	const copyCodeToClipboard = () => {
-
+	const copyCodeToClipboard = async () => {
+		try{
+			await navigator.clipboard.writeText(curYTuserCode);
+			setCopiedToClipboard(true);
+		} catch(error) {
+			setCopiedToClipboard(false);
+			console.error('Failed to copy code to clipboard', error);
+		}
+		
 	}
 
 	const confirmEnteredYTCode = async () => {
 		try {
-			const callbackResponse = await instance.post('/api/ytMusic/callback', {
+			const callbackResponse = await instance.post('/api/ytMusic/auth', {
 				username: auth.user,
-				loginCode: curYTuserCode
+				userCode: curYTuserCode
 			});
 
-			if (callbackResponse.data.success) {
-				console.log('Successfully authenticated with YT Music!');
-				location.reload();
+			if (!callbackResponse.data.success) {
+				throw new Error(callbackResponse.data.error || 'Failed to complete YT Music authentication');
 			}
+
+			location.reload();
+
 		} catch (error) {
-			console.error('Authentication failed at route callback', error);
+			console.error('YT Authentication failed at confirm', error);
 		}
 	}
 
@@ -221,7 +232,7 @@ export default function Dashboard() {
 						<p className="text-xl font-medium mb-4">Step 1: Copy your login code</p>
 						<div className="flex flex-row items-center gap-2 mb-4">
 							<input type="text" className="input input-bordered input-sm w-auto text-center" value={curYTuserCode} readOnly={true} />
-							<button className="btn btn-xs w-[2rem] h-[2rem] p-0" onClick={() => copyCodeToClipboard}>
+							<button className="btn btn-xs w-[2rem] h-[2rem] p-0" onClick={async () => {await copyCodeToClipboard()}}>
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" className="w-5 h-5 fill-current">
 									<path fillRule="evenodd" d="M4 2a2 2 0 00-2 2v9a2 2 0 002 2h2v2a2 2 0 002 2h9a2 2 0 002-2V8a2 2 0 00-2-2h-2V4a2 2 0 00-2-2H4zm9 4V4H4v9h2V8a2 2 0 012-2h5zM8 8h9v9H8V8z" />
 								</svg>
@@ -230,9 +241,8 @@ export default function Dashboard() {
 
 						</div>
 						<p className="text-xl font-medium mb-4">Step 2: Follow this link to authenticate with YouTube</p>
-						<a href={curYTurl} className="text-sm text-primary mb-4">{curYTurl}</a>
-						<p className="text-xl font-medium mb-4">Step 3: Click confirm when finished</p>
-						<button className="btn btn-md btn-success" onClick={async () => {await confirmEnteredYTCode()}}>Confirm</button>
+						<a href={curYTurl} target="_blank" className="text-sm text-primary mb-4">{curYTurl}</a>
+						<button className="btn btn-md btn-success" onClick={async () => {await confirmEnteredYTCode()}}>I've completed these steps</button>
 
 
 					</div>
