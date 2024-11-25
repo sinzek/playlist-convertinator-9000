@@ -87,7 +87,7 @@ const ytMusicRouter = express.Router();
     ytMusicRouter.use(authMiddleware);
     
     ytMusicRouter.post("/auth", async (req, res) => {
-        const { username, userCode } = req.body;
+        const { username, userCode, deviceCode, interval } = req.body;
         const db = req.db;
         const auth = req.auth;
     
@@ -105,6 +105,8 @@ const ytMusicRouter = express.Router();
                 return res.json({
                     verification_url: loginCode.verification_url,
                     userCode: loginCode.user_code,
+                    deviceCode: loginCode.device_code,
+                    interval: loginCode.interval
                 });
             } catch (error) {
                 console.error("Error getting login code:", error);
@@ -125,8 +127,8 @@ const ytMusicRouter = express.Router();
                 return res.status(500).json({ error: "Authentication failed", details: error.message });
             }
             
-            console.log("Attempting to load yt music token with code", storedCredentials.museLoginCode);
-            await auth.load_token_with_code(storedCredentials.museLoginCode);
+            console.log("Attempting to load yt music token with userCode", userCode, "and deviceCode", deviceCode, "with interval", interval);
+            await auth.load_token_with_code(deviceCode, interval);
     
             await db.collection("Credentials").updateOne(
                 { username },
@@ -145,6 +147,31 @@ const ytMusicRouter = express.Router();
         } catch (error) {
             console.error("Error loading token with code:", error);
             res.status(500).json({ error: "Authentication failed", details: error.message });
+        }
+    });
+
+    ytMusicRouter.post("/disconnect", async (request, response) => {
+        let db = database.getDb();
+    
+        try {
+            const username = request.body.params.username;
+    
+            await db.collection("Credentials").updateOne(
+                { username: username },
+                {
+                    $set: {
+                        ytMusicConnected: false,
+                        ytMusicAccessToken: "",
+                        ytMusicRefreshToken: "",
+                        ytMusicTokenExpires: "",
+                    }
+                }
+            );
+    
+            response.json({ message: "Spotify account disconnected successfully" });
+        } catch (error) {
+            console.error("Error disconnecting Spotify:", error);
+            response.status(500).json({ error: "Failed to disconnect Spotify account" });
         }
     });
 })();

@@ -11,6 +11,8 @@ export default function Dashboard() {
 	const [showYTmusicConnectWindow, setShowYTmusicConnectWindow] = useState(false);
 	const [copiedToClipboard, setCopiedToClipboard] = useState(false);
 	const [curYTuserCode, setCurYTuserCode] = useState("");
+	const [curYTdeviceCode, setCurYTdeviceCode] = useState("");
+	const [curYTInterval, setCurYTinterval] = useState("");
 	const [curYTurl, setCurYTurl] = useState("");
 
 	const navigate = useNavigate();
@@ -25,6 +27,8 @@ export default function Dashboard() {
 
 		if (auth.spotifyConnected && auth.ytMusicConnected) {
 			setConnectedAccounts(true);
+			setSpotifyConnected(true);
+			setYTmusicConnected(true);
 		} else if (auth.spotifyConnected) {
 			setSpotifyConnected(true);
 		} else if (auth.ytMusicConnected) {
@@ -52,9 +56,11 @@ export default function Dashboard() {
 				username: auth.user
 			});
 
-			const { verification_url, userCode } = response.data;
+			const { verification_url, userCode, deviceCode, interval } = response.data;
 			setCurYTuserCode(userCode);
 			setCurYTurl(verification_url);
+			setCurYTdeviceCode(deviceCode);
+			setCurYTinterval(interval);
 
 		} catch (error) {
 			console.error('YT Authentication failed at connect:', error);
@@ -77,7 +83,9 @@ export default function Dashboard() {
 		try {
 			const callbackResponse = await instance.post('/api/ytMusic/auth', {
 				username: auth.user,
-				userCode: curYTuserCode
+				userCode: curYTuserCode,
+				deviceCode: curYTdeviceCode,
+				interval: curYTInterval
 			});
 
 			if (!callbackResponse.data.success) {
@@ -105,6 +113,13 @@ export default function Dashboard() {
 			return;
 		}
 
+	};
+
+	const handleYTmusicDisconnect = async () => {
+		try {
+		} catch(error) {
+
+		}
 	};
 
 
