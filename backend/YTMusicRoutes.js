@@ -124,7 +124,8 @@ const ytMusicRouter = express.Router();
                 console.error("Error loading token!");
                 return res.status(500).json({ error: "Authentication failed", details: error.message });
             }
-    
+            
+            console.log("Attempting to load yt music token with code", storedCredentials.museLoginCode);
             await auth.load_token_with_code(storedCredentials.museLoginCode);
     
             await db.collection("Credentials").updateOne(
