@@ -151,7 +151,7 @@ const ytMusicRouter = express.Router();
     });
 
     ytMusicRouter.post("/disconnect", async (request, response) => {
-        let db = database.getDb();
+        const db = request.db;
     
         try {
             const username = request.body.params.username;

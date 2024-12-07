@@ -117,8 +117,15 @@ export default function Dashboard() {
 
 	const handleYTmusicDisconnect = async () => {
 		try {
+            await instance.post(`/api/ytMusic/disconnect`, { params: { username: auth.user }, withCredentials: true });
+			setAuth(prev => ({
+				...prev,
+				ytMusicConnected: false,
+			}));
+			setYTmusicConnected(false);
 		} catch(error) {
-
+            console.log("Error disconnecting YT Music account:", error);
+			return;
 		}
 	};
 
@@ -211,7 +218,7 @@ export default function Dashboard() {
 							</svg>
 							Disconnect Spotify Account
 						</button>
-						<button className="btn btn-error btn-sm font-bold" disabled={ytMusicConnected ? false : true}>
+						<button className="btn btn-error btn-sm font-bold" disabled={ytMusicConnected ? false : true} onClick={handleYTmusicDisconnect}>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								className="h-6 w-6 shrink-0 stroke-current"
