@@ -25,6 +25,7 @@
 `node server.js` for backend server
 
 ### TODO:
+- [ ] Redo YT Music API access since Google is utilizing cookies now?? Reference: https://github.com/sigma67/ytmusicapi/discussions/682
 - [ ] Refresh YT Music and Spotify tokens on login & add checks to determine whether refresh tokens have expired
 - [ ] Set up playlist CRUD routes for Spotify & YT Music
 - [ ] Finish build out of profile section (profile settings, account deletion)
